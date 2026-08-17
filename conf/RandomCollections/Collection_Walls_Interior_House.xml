@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Walls_Interior_House">
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+0-3
+</Tile>
+<Tile>
+8-11
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+4-7
+</Tile>
+<Tile>
+12-15
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+16-19
+</Tile>
+<Tile>
+24-27
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+20-23
+</Tile>
+<Tile>
+28-31
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+32-35
+</Tile>
+<Tile>
+40-43
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+36-39
+</Tile>
+<Tile>
+44-47
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+48-51
+</Tile>
+<Tile>
+56-59
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+52-55
+</Tile>
+<Tile>
+60-63
+</Tile>
+</Tileset>
+
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+0-3
+</Tile>
+<Tile>
+8-11
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+4-7
+</Tile>
+<Tile>
+12-15
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+16-19
+</Tile>
+<Tile>
+24-27
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+20-23
+</Tile>
+<Tile>
+28-31
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+32-35
+</Tile>
+<Tile>
+40-43
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+36-39
+</Tile>
+<Tile>
+44-47
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+48-51
+</Tile>
+<Tile>
+56-59
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+52-55
+</Tile>
+<Tile>
+60-63
+</Tile>
+</Tileset>
+
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+0-3
+</Tile>
+<Tile>
+8-11
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+4-7
+</Tile>
+<Tile>
+12-15
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+16-19
+</Tile>
+<Tile>
+24-27
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+20-23
+</Tile>
+<Tile>
+28-31
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+32-35
+</Tile>
+<Tile>
+40-43
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+36-39
+</Tile>
+<Tile>
+44-47
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+48-51
+</Tile>
+<Tile>
+56-59
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_03" tileDirCount="8">
+<Tile>
+52-55
+</Tile>
+<Tile>
+60-63
+</Tile>
+</Tileset>
+
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+0-3
+</Tile>
+<Tile>
+8-11
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+4-7
+</Tile>
+<Tile>
+12-15
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+16-19
+</Tile>
+<Tile>
+24-27
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+20-23
+</Tile>
+<Tile>
+28-31
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+32-35
+</Tile>
+<Tile>
+40-43
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+36-39
+</Tile>
+<Tile>
+44-47
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+48-51
+</Tile>
+<Tile>
+56-59
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+52-55
+</Tile>
+<Tile>
+60-63
+</Tile>
+</Tileset>
+</Collection>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Tables_1x1_High_01">
+<Tileset name="furniture_tables_high_01" tileDirCount="1">
+<Tile>
+6-7
+</Tile>
+<Tile>
+14-15
+</Tile>
+<Tile>
+23
+</Tile>
+</Tileset>
+</Collection>
