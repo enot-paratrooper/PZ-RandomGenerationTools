@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Floors_Interior">
+<Tileset name="floors_interior_tilesandwood_01" tileDirCount="1">
+<Tile>
+0-14
+</Tile>
+<Tile>
+16-23
+</Tile>
+<Tile>
+24
+</Tile>
+<Tile>
+28-31
+</Tile>
+<Tile>
+40-47
+</Tile>
+<Tile>
+48-52
+</Tile>
+</Tileset>
+</Collection>

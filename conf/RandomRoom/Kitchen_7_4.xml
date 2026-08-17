@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="7" sizeY="4" name="Kitchen">
+#define variableTestRoom = RandomCollection.num(4);
+<tiles>
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1
+</tiles>
+<RandomCollection num="1" name="Walls_Interior_House_01; Walls_Interior_House_02">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Floors_Interior">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Kitchen_Oven">
+<object type="furniture" orient="E" x="6" y="2"/>
+</RandomCollection>
+<RandomCollection num="4" name="Household_Kitchen_Counters_Down"/>
+<NonrandomElement num="1" globalvariable="variableTestRoom">
+<object type="furniture" orient="SE" x="6" y="3"/>
+<object type="furniture" orient="E" x="6" y="1"/>
+<object type="furniture" orient="NE" x="6" y="0"/>
+<object type="furniture" orient="N" x="5" y="0"/>
+<object type="furniture" orient="N" x="1" y="0"/>
+<object type="furniture" orient="N" x="2" y="0"/>
+</NonrandomElement>
+<RandomCollection num="5" name="Household_Kitchen_Counters_Down">
+<object type="furniture" orient="W" x="0" y="2"/>
+<object type="furniture" orient="SW" x="0" y="3"/>
+<object type="furniture" orient="S" x="1" y="3"/>
+</RandomCollection>
+<RandomCollection num="6" name="Household_Kitchen_Refrigerator">
+<object type="furniture" orient="N" x="3" y="0"/>
+</RandomCollection>
+<RandomCollection num="7" name="Household_Trashcontainers">
+<object type="furniture" orient="N" x="4" y="0"/>
+<object type="furniture" orient="W" x="0" y="0"/>
+</RandomCollection>
+<NonrandomElement num="2">
+<furniture>
+  <entry orient="W">
+   <tile x="0" y="0" name="appliances_cooking_01_032"/>
+  </entry>
+  <entry orient="N">
+   <tile x="0" y="0" name="appliances_cooking_01_033"/>
+  </entry>
+</furniture>
+<object type="furniture" orient="N" x="1-2;5-6" y="0" void="10"/>
+</NonrandomElement>
+<NonrandomElement num="3">
+<tile_entry category="interior_wall_trim">
+  <tile enum="West" tile="walls_interior_detailing_01_000"/>
+  <tile enum="North" tile="walls_interior_detailing_01_001"/>
+  <tile enum="NorthWest" tile="walls_interior_detailing_01_002"/>
+  <tile enum="SouthEast" tile="walls_interior_detailing_01_003"/>
+  <tile enum="WestWindow" tile="walls_interior_detailing_01_008"/>
+  <tile enum="NorthWindow" tile="walls_interior_detailing_01_009"/>
+  <tile enum="WestDoor" tile="walls_interior_detailing_01_010"/>
+  <tile enum="NorthDoor" tile="walls_interior_detailing_01_011"/>
+ </tile_entry>
+ <object type="RoomParameter" parameter="InteriorWallTrim"/>
+</NonrandomElement>
+<RandomGroup num="1" name="Light_Grime">
+<object type="group" x="0" y="0"/>
+</RandomGroup>
+</room>

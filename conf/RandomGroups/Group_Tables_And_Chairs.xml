@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Groups name="Tables_And_Chairs">
+#define variableTestGroop = RandomCollection.num(2);
+<RandomCollection num="1" name="Household_Tables_1x1_High_01">
+<object type="furniture" orient="W" x="1" y="1"/>
+</RandomCollection>
+<RandomCollection num="2" name="Household_Kitchen_Chairs">
+<object type="furniture" orient="W" x="0" y="1"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Lighting_Small_On_Table">
+<object type="furniture" orient="W" x="1" y="1" void="50,5"/>
+</RandomCollection>
+<NonrandomElement num="1" globalvariable="variableTestGroop">
+<object type="furniture" orient="N" x="1" y="0"/>
+<object type="furniture" orient="S" x="1" y="2"/>
+<object type="furniture" orient="E" x="2" y="1"/>
+</NonrandomElement>
+</Groups>
