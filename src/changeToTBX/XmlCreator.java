@@ -59,71 +59,70 @@ public class XmlCreator {
             // Нумерация сквозная по всем tile_entry и должна совпадать с нумерацией
             // в Room.InitRoomparameters, иначе ссылки Door/Window/Floor уедут.
             int iterTileSet = 1;
-            for (Collection coll : data.Collections) {
-                String typeOfObject = coll.GetTypeOfObject();
-                if ("RoomParameter".equals(typeOfObject)) {
-                    String TypeOfRoomparametr = coll.GetParameter();
-                    data.UsedTiles.add(iterTileSet);
-                    iterTileSet++;
-                    switch (TypeOfRoomparametr) {
-                        case "InteriorWall":
-                            appendTileEntry(doc, buildingElement, "interior_walls", directionForWalls, coll);
-                            break;
-                        case "InteriorWallTrim":
-                            appendTileEntry(doc, buildingElement, "interior_wall_trim", directionForWalls, coll);
-                            break;
-                        case "Floor":
-                            appendTileEntry(doc, buildingElement, "floors", directionForFloors, coll);
-                            break;
-                        case "GrimeFloor":
-                            appendTileEntry(doc, buildingElement, "grime_floor", directionForFloorGrime, coll);
-                            break;
-                        case "GrimeWall":
-                            appendTileEntry(doc, buildingElement, "grime_wall", directionForGrimeWall, coll);
-                            break;
-                        case "Door":
-                            appendTileEntry(doc, buildingElement, "doors", directionForDoors, coll);
-                            break;
-                        case "DoorFrame":
-                            appendTileEntry(doc, buildingElement, "door_frames", directionForDoorFrames, coll);
-                            break;
-                        case "Window":
-                            appendTileEntry(doc, buildingElement, "windows", directionForWindows, coll);
-                            break;
-                        case "Curtains":
-                            appendTileEntry(doc, buildingElement, "curtains", directionForCurtains, coll);
-                            break;
-                        case "Shutters":
-                            appendTileEntry(doc, buildingElement, "shutters", directionForShutters, coll);
-                            break;
-                        case "Stairs":
-                            appendTileEntry(doc, buildingElement, "stairs", directionForStairs, coll);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    "Неизвестный параметр комнаты: " + TypeOfRoomparametr);
-                    }
-                } else if ("furniture".equals(typeOfObject)) {
-                    Element furnitureElement = doc.createElement("furniture");
-                    // Слой отрисовки, например WallFurniture для настенного декора
-                    String layer = coll.getLayer();
-                    if (layer != null && !layer.isEmpty()) {
-                        furnitureElement.setAttribute("layer", layer);
-                    }
-                    if (coll.hasRuleOfPlacing()) {
-                        SetTilesForFurnitureWithRules(furnitureElement, coll.getPickedFurnitureWithRules(), doc);
-                    } else {
-                        // corners относится только к мебели с восемью направлениями.
-                        // У многоплиточной мебели восемь индексов - это несколько
-                        // направлений по несколько тайлов, и corners там не нужен.
-                        if (coll.getPickedFurniture().size() == 8) {
-                            furnitureElement.setAttribute("corners", "true");
-                        }
-                        SetTilesForFurniture(furnitureElement, coll.getPickedFurniture(), doc);
-                    }
-                    buildingElement.appendChild(furnitureElement);
-                }
-            }
+			for (Collection coll : data.usedTile) {
+				String TypeOfRoomparametr = coll.GetParameter();
+				data.UsedTiles.add(iterTileSet);
+				iterTileSet++;
+				switch (TypeOfRoomparametr) {
+				case "InteriorWall":
+					appendTileEntry(doc, buildingElement, "interior_walls", directionForWalls, coll);
+					break;
+				case "InteriorWallTrim":
+					appendTileEntry(doc, buildingElement, "interior_wall_trim", directionForWalls, coll);
+					break;
+				case "Floor":
+					appendTileEntry(doc, buildingElement, "floors", directionForFloors, coll);
+					break;
+				case "GrimeFloor":
+					appendTileEntry(doc, buildingElement, "grime_floor", directionForFloorGrime, coll);
+					break;
+				case "GrimeWall":
+					appendTileEntry(doc, buildingElement, "grime_wall", directionForGrimeWall, coll);
+					break;
+				case "Door":
+					appendTileEntry(doc, buildingElement, "doors", directionForDoors, coll);
+					break;
+				case "DoorFrame":
+					appendTileEntry(doc, buildingElement, "door_frames", directionForDoorFrames, coll);
+					break;
+				case "Window":
+					appendTileEntry(doc, buildingElement, "windows", directionForWindows, coll);
+					break;
+				case "Curtains":
+					appendTileEntry(doc, buildingElement, "curtains", directionForCurtains, coll);
+					break;
+				case "Shutters":
+					appendTileEntry(doc, buildingElement, "shutters", directionForShutters, coll);
+					break;
+				case "Stairs":
+					appendTileEntry(doc, buildingElement, "stairs", directionForStairs, coll);
+					break;
+				default:
+					throw new IllegalArgumentException("Неизвестный параметр комнаты: " + TypeOfRoomparametr);
+				}
+			}
+			for (Collection coll : data.usedFurniture) {
+
+				Element furnitureElement = doc.createElement("furniture");
+				// Слой отрисовки, например WallFurniture для настенного декора
+				String layer = coll.getLayer();
+				if (layer != null && !layer.isEmpty()) {
+					furnitureElement.setAttribute("layer", layer);
+				}
+				if (coll.hasRuleOfPlacing()) {
+					SetTilesForFurnitureWithRules(furnitureElement, coll.getPickedFurnitureWithRules(), doc);
+				} else {
+					// corners относится только к мебели с восемью направлениями.
+					// У многоплиточной мебели восемь индексов - это несколько
+					// направлений по несколько тайлов, и corners там не нужен.
+					if (coll.getPickedFurniture().size() == 8) {
+						furnitureElement.setAttribute("corners", "true");
+					}
+					SetTilesForFurniture(furnitureElement, coll.getPickedFurniture(), doc);
+				}
+				buildingElement.appendChild(furnitureElement);
+
+			}
             //Запись использованых user_tiles и user_tiles 
             Element usedUserTiles = doc.createElement("user_tiles");
             buildingElement.appendChild(usedUserTiles);

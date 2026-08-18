@@ -13,20 +13,17 @@ import randRoomGen.ObjectTiles.TileParameter;
 import tools.linker.Linker;
 
 public class CommonData {
-	public ArrayList<RandomCollection> RandomCollections = new ArrayList<>();
-	public List<NonrandomElement> NonrandomElements = new ArrayList<>();
-	public List<Collection> Collections = new ArrayList<>();
+	public ArrayList<RandomCollection> RandomCollections = new ArrayList<>(30);
+	public List<NonrandomElement> NonrandomElements = new ArrayList<>(30);
+	public List<Collection> Collections = new ArrayList<>(60);
+	public List<Collection> usedFurniture = new ArrayList<>(40);
+	public List<Collection> usedTile = new ArrayList<>(20);
 	
-	/**
-	 * Двери, окна и лестницы. Хранятся отдельно от коллекций: набор тайлов
-	 * для них задаётся параметрами комнаты (Door, DoorFrame, Window, Curtains,
-	 * Shutters, Stairs), а сам объект несёт только координаты и направление.
-	 */
-	public List<ObjectTile> Openings = new ArrayList<>();
+	public List<ObjectTile> Openings = new ArrayList<>(15);
 	
 	public List<Integer> UsedUserTiles= new ArrayList<>();
-	public List<Integer> UsedTiles= new ArrayList<>();
-	public List<Integer> UsedFurnitureTiles= new ArrayList<>();
+	public List<Integer> UsedTiles= new ArrayList<>(20);
+	public List<Integer> UsedFurnitureTiles= new ArrayList<>(40);
 	
 	public Linker linker = new Linker();
 	
@@ -121,17 +118,19 @@ public class CommonData {
 		Collections.addAll(RandomCollections);
 		Collections.addAll(NonrandomElements);
 	}
-	public void DetermineQueueType() {
+	public void DetermineListType() {
 		int iterTileSet = 1;
 		int iterFurnitureTileSet = 0;
 		for(Collection coll:Collections) {
 			String typeOfObject = coll.GetTypeOfObject();
             if ("RoomParameter".equals(typeOfObject)) {
             	coll.relativeNumberLocation = iterTileSet;
+            	usedTile.add(coll);
             	iterTileSet++;
             }
             else if("furniture".equals(typeOfObject)) {
             	coll.relativeNumberLocation = iterFurnitureTileSet;
+            	usedFurniture.add(coll);
             	iterFurnitureTileSet++;
             }
 		}

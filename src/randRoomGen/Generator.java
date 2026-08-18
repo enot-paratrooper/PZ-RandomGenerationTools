@@ -12,7 +12,7 @@ public class Generator {
 		Room room = new Room(data);
 		room.loadRoom("SS2_Bathroom_3_4");		
 		data.MergeCollections();
-		data.DetermineQueueType();
+		data.DetermineListType();
 		data.InitTileSets();
 		data.InitLinks();	
 		room.InitRoomparameters();
