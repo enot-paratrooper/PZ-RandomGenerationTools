@@ -12,34 +12,15 @@ import randGroups.RandomGroup;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
 import randRoomGen.ObjectTiles.GlobalParameter;
+import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.ObjectTileFactory;
 
 public class LoadFunc {
 
 	public static void loadRandColl(CommonData data, Element mainElement) {
-		NodeList RandomCollectionNodes = mainElement.getElementsByTagName("RandomCollection");
-        for(int i=0;i<RandomCollectionNodes.getLength();i++) {
-        	Element RandomCollectionE = (Element)RandomCollectionNodes.item(i);
-        	String RandomCollectionName = RandomCollectionE.getAttribute("name");
-        	if(RandomCollectionName.isEmpty()) {
-        		throw new IllegalArgumentException("Неверное имя коллекции - " + RandomCollectionE.getAttribute("num"));
-        	}
-        	RandomCollection newRandomCollection = new RandomCollection(data.random);
-        	newRandomCollection.numberOfCollection = Integer.parseInt(RandomCollectionE.getAttribute("num"));
-        	newRandomCollection.loadRandomCollection(splitString(RandomCollectionName));
-        	NodeList ObjectTiles = RandomCollectionE.getElementsByTagName("object");
-        	if(ObjectTiles.getLength()==0) {
-        		newRandomCollection.AddFurniture(new GlobalParameter());
-        	}
-        	for(int j=0;j<ObjectTiles.getLength();j++)
-        	{
-        		Element FurnitureE = (Element)ObjectTiles.item(j);
-        		int randCollNum = Integer.parseInt(RandomCollectionE.getAttribute("num"));
-        		newRandomCollection.AddFurniture(ObjectTileFactory.createReflective(FurnitureE, randCollNum));
-        	}
-        	data.RandomCollections.add(newRandomCollection);
-        }
+		loadRandColl(data, mainElement, 0, 0);
 	}
+	
 	public static void loadRandColl(CommonData data, Element mainElement, int x, int y) {
 		NodeList RandomCollectionNodes = mainElement.getElementsByTagName("RandomCollection");
         for(int i=0;i<RandomCollectionNodes.getLength();i++) {
@@ -52,6 +33,12 @@ public class LoadFunc {
         	newRandomCollection.numberOfCollection = Integer.parseInt(RandomCollectionE.getAttribute("num"));
         	newRandomCollection.loadRandomCollection(splitString(RandomCollectionName));
         	NodeList ObjectTiles = RandomCollectionE.getElementsByTagName("object");
+        	// Коллекция без объектов нужна только как цель ссылки #define.
+        	// Раньше эта ветка была лишь в комнатной версии, и такая коллекция
+        	// внутри RandomGroup валила GetTypeOfObject().
+        	if(ObjectTiles.getLength()==0) {
+        		newRandomCollection.AddFurniture(new GlobalParameter());
+        	}
         	for(int j=0;j<ObjectTiles.getLength();j++)
         	{
         		Element FurnitureE = (Element)ObjectTiles.item(j);
@@ -65,14 +52,7 @@ public class LoadFunc {
 	}
 	
 	public static void loadNonRandE(CommonData data, Element mainElement) {
-		NodeList nonrandomElementsNodes = mainElement.getElementsByTagName("NonrandomElement");
-        for(int i=0;i<nonrandomElementsNodes.getLength();i++) {
-        	Element nonrandomElement = (Element)nonrandomElementsNodes.item(i);
-        	NonrandomElement newNonrandomElement = new NonrandomElement();
-        	int num = Integer.parseInt(nonrandomElement.getAttribute("num"));
-        	newNonrandomElement.loadNonrandomElement(nonrandomElement, num, data.linker);
-        	data.NonrandomElements.add(newNonrandomElement);
-        }
+		loadNonRandE(data, mainElement, 0, 0);
 	}
 	
 	public static void loadNonRandE(CommonData data, Element mainElement, int x, int y) {
@@ -88,11 +68,38 @@ public class LoadFunc {
         }
 	}
 	
+	/**
+	 * Загрузка дверей, окон и лестниц из блока Openings.
+	 * Набор тайлов у них общий на комнату (параметры Door/DoorFrame/Window/
+	 * Curtains/Shutters/Stairs), поэтому коллекция каждому объекту не нужна.
+	 */
+	public static void loadOpenings(CommonData data, Element mainElement) {
+		loadOpenings(data, mainElement, 0, 0);
+	}
+	
+	public static void loadOpenings(CommonData data, Element mainElement, int x, int y) {
+		NodeList openingsNodes = mainElement.getElementsByTagName("Openings");
+        for(int i=0;i<openingsNodes.getLength();i++) {
+        	Element openingsElement = (Element)openingsNodes.item(i);
+        	NodeList objectNodes = openingsElement.getElementsByTagName("object");
+        	for(int j=0;j<objectNodes.getLength();j++) {
+        		Element objectElement = (Element)objectNodes.item(j);
+        		ObjectTile opening = ObjectTileFactory.createReflective(objectElement, j);
+        		// Атрибут void позволяет случайно не ставить окно/дверь
+        		if(!opening.placeble) {
+        			continue;
+        		}
+        		opening.x += x;
+        		opening.y += y;
+        		data.Openings.add(opening);
+        	}
+        }
+	}
+	
 	public static void loadRandGroup(CommonData data, Element roomElement,List<RandomGroup> RandomGroups) {
 		NodeList randomGroupsNodes = roomElement.getElementsByTagName("RandomGroup");
         for(int i=0;i<randomGroupsNodes.getLength();i++) {
         	Element randomGroupElement = (Element)randomGroupsNodes.item(i);
-        	int num = Integer.parseInt(randomGroupElement.getAttribute("num"));
         	String name = randomGroupElement.getAttribute("name");
         	NodeList groopObjectsNodes = randomGroupElement.getElementsByTagName("object");
         	for(int j=0;j<groopObjectsNodes.getLength();j++) {

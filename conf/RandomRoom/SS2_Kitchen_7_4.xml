@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="7" sizeY="4" name="Kitchen">
+<tiles>
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,
+1,1,1,1,1,1,1
+</tiles>
+<RandomCollection num="1" name="Walls_Interior_House_01; Walls_Interior_House_02; Walls_Interior_House_03">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Floors_Interior_Fixed">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Kitchen_Counters_Down">
+<object type="furniture" orient="NE" x="6" y="0"/>
+<object type="furniture" orient="E" x="6" y="1"/>
+<object type="furniture" orient="SE" x="6" y="3"/>
+<object type="furniture" orient="N" x="5" y="0"/>
+<object type="furniture" orient="N" x="1" y="0"/>
+<object type="furniture" orient="N" x="2" y="0"/>
+</RandomCollection>
+<RandomCollection num="4" name="Household_Kitchen_Counters_Down">
+<object type="furniture" orient="W" x="0" y="2"/>
+<object type="furniture" orient="SW" x="0" y="3"/>
+<object type="furniture" orient="S" x="1" y="3"/>
+</RandomCollection>
+<RandomCollection num="5" name="Household_Kitchen_Oven">
+<object type="furniture" orient="E" x="6" y="2"/>
+</RandomCollection>
+<RandomCollection num="6" name="Household_Kitchen_Refrigerator">
+<object type="furniture" orient="N" x="3" y="0"/>
+</RandomCollection>
+<RandomCollection num="7" name="Household_Kitchen_Sink">
+<object type="furniture" orient="N" x="1" y="0"/>
+</RandomCollection>
+<RandomCollection num="8" name="Household_Kitchen_Microwave">
+<object type="furniture" orient="N" x="5" y="0"/>
+</RandomCollection>
+<RandomCollection num="9" name="Household_Trashcontainers">
+<object type="furniture" orient="N" x="4" y="0"/>
+<object type="furniture" orient="W" x="0" y="0"/>
+</RandomCollection>
+<!-- Наборы тайлов для проёмов: обычные RoomParameter, как стены и пол -->
+<RandomCollection num="10" name="Doors_Interior">
+<object type="RoomParameter" parameter="Door"/>
+</RandomCollection>
+<RandomCollection num="11" name="Door_Frames">
+<object type="RoomParameter" parameter="DoorFrame"/>
+</RandomCollection>
+<RandomCollection num="12" name="Windows_Interior">
+<object type="RoomParameter" parameter="Window"/>
+</RandomCollection>
+<RandomCollection num="13" name="Curtains">
+<object type="RoomParameter" parameter="Curtains"/>
+</RandomCollection>
+<!--
+  Двери, окна и лестницы. Координаты - линии стен, поэтому допустимы
+  значения от 0 до sizeX/sizeY включительно. Атрибут x/y понимает диапазоны,
+  void задаёт шанс не ставить объект.
+-->
+<Openings>
+<object type="door" orient="N" x="3" y="4"/>
+<object type="window" orient="W" x="0" y="1"/>
+<object type="window" orient="N" x="1-2" y="0" void="30"/>
+<object type="window" orient="N" x="5" y="0" ShuttersTile="0"/>
+</Openings>
+</room>

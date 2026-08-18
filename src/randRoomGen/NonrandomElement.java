@@ -4,7 +4,6 @@ package randRoomGen;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import randRoomGen.ObjectTiles.Furniture;
 import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.ObjectTileFactory;
 import randRoomGen.ObjectTiles.Roomparameter;
@@ -36,8 +35,7 @@ public class NonrandomElement extends Collection{
 		}
 		else if(this.tilesGenerated.get(0).type.equals("furniture")) {
 			Element tilesetElement = (Element) NonrandomElement.getElementsByTagName("furniture").item(0);
-			setNameOfPickedTileSet(tilesetElement);
-			setIndexsOfPickedTileSet(tilesetElement);
+			loadFurnitureTileset(tilesetElement);
 		}
 		else {
 			Element tilesetElement  = (Element) NonrandomElement.getElementsByTagName("tile_entry").item(0);
@@ -50,6 +48,90 @@ public class NonrandomElement extends Collection{
 		}
 		
 	}
+	
+	/**
+	 * Разбор блока furniture нерандомного элемента.
+	 *
+	 * Поддерживает как однотайловую мебель (по одному tile в каждом entry, как раньше),
+	 * так и многоплиточную (несколько tile с разными x/y внутри одного entry).
+	 * Многоплиточный вариант превращается в правила размещения того же вида,
+	 * что и hasXsize="true" в файлах коллекций: entry клонируется, а имена тайлов
+	 * заменяются на позиции в списке индексов набора. Благодаря этому дальше
+	 * работает общий код Tileset.getFurnitureWithRules(), и такой элемент
+	 * можно связать через globalvariable с RandomCollection.
+	 */
+	private void loadFurnitureTileset(Element furnitureElement) {
+		if(furnitureElement == null) {
+			throw new IllegalArgumentException("У нерандомного элемента типа furniture отсутствует блок furniture");
+		}
+		if(furnitureElement.hasAttribute("layer")) {
+			tileset.setLayer(furnitureElement.getAttribute("layer"));
+		}
+		NodeList entryNodes = furnitureElement.getElementsByTagName("entry");
+		if(entryNodes.getLength()==0) {
+			throw new IllegalArgumentException("В блоке furniture не задано ни одного entry");
+		}
+		// Первый проход: выясняем, многоплиточная ли мебель
+		boolean multiTile = false;
+		for(int i=0;i<entryNodes.getLength();i++) {
+			Element entryElement = (Element) entryNodes.item(i);
+			int tileCount = entryElement.getElementsByTagName("tile").getLength();
+			if(tileCount==0) {
+				throw new IllegalArgumentException("В entry не задано ни одного tile");
+			}
+			if(tileCount>1) {
+				multiTile = true;
+			}
+		}
+		// Второй проход: собираем индексы и, для многоплиточной мебели, правила
+		List<Integer> Indexs = new ArrayList<Integer>();
+		List<Element> Rules = new ArrayList<Element>();
+		String baseName = null;
+		for(int i=0;i<entryNodes.getLength();i++) {
+			Element entryElement = (Element) entryNodes.item(i);
+			// Работаем с копией, чтобы не портить исходный DOM комнаты
+			Element ruleElement = (Element) entryElement.cloneNode(true);
+			NodeList tileNodes = ruleElement.getElementsByTagName("tile");
+			for(int j=0;j<tileNodes.getLength();j++) {
+				Element tileElement = (Element) tileNodes.item(j);
+				String fullName = tileElement.getAttribute("name");
+				if(fullName.isEmpty()) {
+					throw new IllegalArgumentException("У tile не задан атрибут name");
+				}
+				String currentName = removeLastUnderscorePartRegex(fullName);
+				if(baseName == null) {
+					baseName = currentName;
+				}
+				else if(!baseName.equals(currentName)) {
+					throw new IllegalArgumentException(
+						"Мебель нерандомного элемента должна использовать один набор тайлов: '"
+						+ baseName + "' и '" + currentName + "'");
+				}
+				int index = Integer.parseInt(getLastPartWithoutLeadingZeros(fullName));
+				int position;
+				if(multiTile) {
+					// Один и тот же тайл может встречаться в разных направлениях
+					position = Indexs.indexOf(index);
+					if(position == -1) {
+						Indexs.add(index);
+						position = Indexs.size()-1;
+					}
+				}
+				else {
+					Indexs.add(index);
+					position = Indexs.size()-1;
+				}
+				tileElement.setAttribute("name", Integer.toString(position));
+			}
+			Rules.add(ruleElement);
+		}
+		tileset.SetName(baseName);
+		tileset.setIndexs(Indexs);
+		if(multiTile) {
+			tileset.setRules(Rules);
+		}
+	}
+	
 	@Override
 	public String GetTypeOfObject() {
 		return tilesGenerated.get(0).type;
@@ -65,15 +147,7 @@ public class NonrandomElement extends Collection{
 		return tileset.getName();		
 	}
 	private void setNameOfPickedTileSet(Element tilesetElement) {
-		String fullName;
-		if(this.tilesGenerated.get(0).type.equals("furniture")) {
-			fullName = ((Element)((Element)tilesetElement
-					.getElementsByTagName("entry").item(0))
-					.getElementsByTagName("tile").item(0)).getAttribute("name");
-		}
-		else {
-			fullName = ((Element)tilesetElement.getElementsByTagName("tile").item(0)).getAttribute("tile");
-		}
+		String fullName = ((Element)tilesetElement.getElementsByTagName("tile").item(0)).getAttribute("tile");
 		tileset.SetName(removeLastUnderscorePartRegex(fullName));	
 	}
 	@Override
@@ -83,46 +157,34 @@ public class NonrandomElement extends Collection{
 	 @Override
 	public ArrayList<String> getPickedTileset()
 		{			
-			ArrayList<String> PickedTileset = new ArrayList<String>();
-			String NameOfPickedTileset = tileset.getName();
-			ArrayList<Integer> Indexs = (ArrayList<Integer>) tileset.getIndexs();
-			for(Integer j:Indexs)
-			{
-				PickedTileset.add(NameOfPickedTileset+"_0"+j);
-			}
-			return PickedTileset;
+			return tileset.getTileNames();
 		}
 	 @Override
 		public ArrayList<String> getPickedFurniture()
 		{
-			ArrayList<String> PickedTileset = new ArrayList<String>();
-			String NameOfPickedTileset = tileset.getName();
-			ArrayList<Integer> Indexs = (ArrayList<Integer>) tileset.getIndexs();
-			for(Integer j:Indexs)
-			{
-				PickedTileset.add(NameOfPickedTileset+"_0"+j);
-			}
-			return PickedTileset;
+			return tileset.getTileNames();
+		}
+	 @Override
+	 public ArrayList<Element> getPickedFurnitureWithRules()
+		{
+			return tileset.getFurnitureWithRules();
+		}
+	 @Override
+	 public boolean hasRuleOfPlacing(){
+			return tileset.IsHaveRuleOfPlacing();
+		}
+	 @Override
+	 public String getLayer(){
+			return tileset.getLayer();
 		}
 	private void setIndexsOfPickedTileSet(Element tilesetElement){
 		List<Integer> Indexs = new ArrayList<Integer>();
-		NodeList tileNodes;
-		if(this.tilesGenerated.get(0).type.equals("furniture")) {
-			tileNodes = tilesetElement.getElementsByTagName("entry");
-			for(int i=0;i<tileNodes.getLength();i++) {
-				Element tileElement = (Element) ((Element)tileNodes.item(i)).getElementsByTagName("tile").item(0);
-				String lastBlock = getLastPartWithoutLeadingZeros(tileElement.getAttribute("name"));
-				Indexs.add(Integer.parseInt(lastBlock));
-			}
-		}	
-		else {
-			tileNodes = tilesetElement.getElementsByTagName("tile");
-			for(int i=0;i<tileNodes.getLength();i++)
-			{
-				Element tileElement = (Element) tileNodes.item(i);
-				String lastBlock = getLastPartWithoutLeadingZeros(tileElement.getAttribute("tile"));
-				Indexs.add(Integer.parseInt(lastBlock));
-			}
+		NodeList tileNodes = tilesetElement.getElementsByTagName("tile");
+		for(int i=0;i<tileNodes.getLength();i++)
+		{
+			Element tileElement = (Element) tileNodes.item(i);
+			String lastBlock = getLastPartWithoutLeadingZeros(tileElement.getAttribute("tile"));
+			Indexs.add(Integer.parseInt(lastBlock));
 		}
 		tileset.setIndexs(Indexs);
 	}
@@ -134,8 +196,7 @@ public class NonrandomElement extends Collection{
 	 public LinkedList<UsedFurniture> getUsedFurniture(int Tileset){
 		LinkedList<UsedFurniture> UsedFurniture = new LinkedList<UsedFurniture>();
 		for(ObjectTile object:tilesGenerated) {
-		Furniture furniture = (Furniture) object;
-		UsedFurniture.add(new UsedFurniture(Tileset,furniture.direction,furniture.x,furniture.y));
+			UsedFurniture.add(new UsedFurniture(Tileset,object.direction,object.x,object.y));
 		}
 		return UsedFurniture;
 		 
@@ -143,7 +204,7 @@ public class NonrandomElement extends Collection{
 	 @Override
 	 public boolean isPlaceble()
 	 {
-		 return ((Furniture)tilesGenerated.get(0)).placeble;
+		 return tilesGenerated.get(0).placeble;
 	 }
 	 public void setOffsetX(int x) {
 		 for(ObjectTile tile:tilesGenerated) {

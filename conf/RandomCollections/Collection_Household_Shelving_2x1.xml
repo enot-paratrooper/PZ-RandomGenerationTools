@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Shelving_2x1">
+<Tileset name="furniture_shelving_01" hasXsize="true" tileDirCount="4">
+<entry orient="W">
+   <tile x="0" y="0" name="0"/>
+   <tile x="0" y="1" name="1"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="2"/>
+   <tile x="1" y="0" name="3"/>
+</entry>
+<Tile>
+25
+</Tile>
+<Tile>
+24
+</Tile>
+<Tile>
+26
+</Tile>
+<Tile>
+27
+</Tile>
+</Tileset>
+</Collection>

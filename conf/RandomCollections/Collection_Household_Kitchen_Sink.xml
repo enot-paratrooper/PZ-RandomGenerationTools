@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Kitchen_Sink">
+<Tileset name="fixtures_sinks_01" tileDirCount="4">
+<Tile>
+8
+</Tile>
+<Tile>
+9
+</Tile>
+<Tile>
+10
+</Tile>
+<Tile>
+11
+</Tile>
+</Tileset>
+</Collection>

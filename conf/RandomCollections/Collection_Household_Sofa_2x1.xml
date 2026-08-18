@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Sofa_2x1">
+<Tileset name="furniture_seating_indoor_01" hasXsize="true" tileDirCount="8">
+<entry orient="W">
+   <tile x="0" y="0" name="0"/>
+   <tile x="0" y="1" name="1"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="2"/>
+   <tile x="1" y="0" name="3"/>
+</entry>
+<entry orient="E">
+   <tile x="0" y="0" name="4"/>
+   <tile x="0" y="1" name="5"/>
+</entry>
+<entry orient="S">
+   <tile x="0" y="0" name="6"/>
+   <tile x="1" y="0" name="7"/>
+</entry>
+<Tile>
+3
+</Tile>
+<Tile>
+2
+</Tile>
+<Tile>
+0
+</Tile>
+<Tile>
+1
+</Tile>
+<Tile>
+5
+</Tile>
+<Tile>
+4
+</Tile>
+<Tile>
+6
+</Tile>
+<Tile>
+7
+</Tile>
+</Tileset>
+</Collection>

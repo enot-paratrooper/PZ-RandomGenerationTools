@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Категория doors: West, North, WestOpen, NorthOpen -->
+<Collection name="Doors_Bathroom">
+<Tileset name="fixtures_bathroom_01" tileDirCount="4">
+<Tile>
+64
+</Tile>
+<Tile>
+65
+</Tile>
+<Tile>
+66
+</Tile>
+<Tile>
+67
+</Tile>
+</Tileset>
+<Tileset name="fixtures_bathroom_01" tileDirCount="4">
+<Tile>
+48
+</Tile>
+<Tile>
+49
+</Tile>
+<Tile>
+50
+</Tile>
+<Tile>
+51
+</Tile>
+</Tileset>
+</Collection>

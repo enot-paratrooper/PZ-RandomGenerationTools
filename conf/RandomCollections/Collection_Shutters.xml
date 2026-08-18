@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Категория shutters: WestBelow, WestAbove, NorthLeft, NorthRight -->
+<Collection name="Shutters">
+<Tileset name="fixtures_windows_detailing_01" tileDirCount="4">
+<Tile>
+16
+</Tile>
+<Tile>
+17
+</Tile>
+<Tile>
+18
+</Tile>
+<Tile>
+19
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_detailing_01" tileDirCount="4">
+<Tile>
+20
+</Tile>
+<Tile>
+21
+</Tile>
+<Tile>
+22
+</Tile>
+<Tile>
+23
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_detailing_01" tileDirCount="4">
+<Tile>
+24
+</Tile>
+<Tile>
+25
+</Tile>
+<Tile>
+26
+</Tile>
+<Tile>
+27
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_detailing_01" tileDirCount="4">
+<Tile>
+28
+</Tile>
+<Tile>
+29
+</Tile>
+<Tile>
+30
+</Tile>
+<Tile>
+31
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_detailing_01" tileDirCount="4">
+<Tile>
+32
+</Tile>
+<Tile>
+33
+</Tile>
+<Tile>
+34
+</Tile>
+<Tile>
+35
+</Tile>
+</Tileset>
+</Collection>

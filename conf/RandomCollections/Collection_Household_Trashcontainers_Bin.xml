@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Trashcontainers_Bin">
+<Tileset name="trashcontainers_01" tileDirCount="2">
+<Tile>
+24
+</Tile>
+<Tile>
+25
+</Tile>
+</Tileset>
+<Tileset name="trashcontainers_01" tileDirCount="2">
+<Tile>
+26
+</Tile>
+<Tile>
+27
+</Tile>
+</Tileset>
+</Collection>

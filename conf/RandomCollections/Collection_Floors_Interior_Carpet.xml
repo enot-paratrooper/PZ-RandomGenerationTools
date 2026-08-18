@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Floors_Interior_Carpet">
+<Tileset name="floors_interior_carpet_01" tileDirCount="1">
+<Tile>
+0-12
+</Tile>
+</Tileset>
+</Collection>

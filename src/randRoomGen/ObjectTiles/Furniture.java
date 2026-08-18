@@ -1,22 +1,10 @@
 package randRoomGen.ObjectTiles;
 
-import org.w3c.dom.Element;
-import static tools.RandTools.chance;
+/**
+ * Мебель. Поля placeble и layer подняты в ObjectTile, поэтому здесь остаётся
+ * только специфика мебели; разбор атрибутов void/layer делает базовый класс.
+ */
+public class Furniture extends ObjectTile {
 
-public class Furniture extends ObjectTile  {
-	 public int size;
-	 public boolean placeble = true;
-	 @Override
-	 public void initialize(Element element)
-		{
-		 super.initialize(element);
-		 if(element.hasAttribute("void")) {
-			 
-			 placeble = chance(element.getAttribute("void"));
-
-			}
-		}
-	 
-
+	public int size;
 }
-

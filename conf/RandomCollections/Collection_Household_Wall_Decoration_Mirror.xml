@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Wall_Decoration_Mirror">
+<Tileset name="walls_decoration_01" tileDirCount="4">
+<Tile>
+36
+</Tile>
+<Tile>
+37
+</Tile>
+<Tile>
+38
+</Tile>
+<Tile>
+39
+</Tile>
+</Tileset>
+</Collection>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Storage_Nightstand">
+<Tileset name="furniture_storage_01" tileDirCount="4">
+<Tile>
+42
+</Tile>
+<Tile>
+43
+</Tile>
+<Tile>
+40
+</Tile>
+<Tile>
+41
+</Tile>
+</Tileset>
+</Collection>

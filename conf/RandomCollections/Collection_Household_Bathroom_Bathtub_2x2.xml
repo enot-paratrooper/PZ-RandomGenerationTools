@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Bathroom_Bathtub_2x2">
+<Tileset name="fixtures_bathroom_01" hasXsize="true" tileDirCount="5">
+<entry orient="W">
+   <tile x="0" y="0" name="0"/>
+   <tile x="0" y="1" name="1"/>
+   <tile x="1" y="0" name="2"/>
+   <tile x="1" y="1" name="3"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="4"/>
+   <tile x="0" y="1" name="1"/>
+   <tile x="1" y="0" name="2"/>
+   <tile x="1" y="1" name="3"/>
+</entry>
+<Tile>
+33
+</Tile>
+<Tile>
+35
+</Tile>
+<Tile>
+34
+</Tile>
+<Tile>
+36
+</Tile>
+<Tile>
+32
+</Tile>
+</Tileset>
+</Collection>

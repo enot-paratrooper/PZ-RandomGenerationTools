@@ -11,12 +11,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import randRoomGen.ObjectTiles.Furniture;
 import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.Roomparameter;
 
 public class RandomCollection extends Collection
 {
+	
 
 	private List<Tileset> Tilesets =  new ArrayList<>();
 	private int dirCount;
@@ -59,6 +59,8 @@ public class RandomCollection extends Collection
 	            
 	            // Получаем корневой элемент Collection
 	            Element collectionElement = document.getDocumentElement();
+	            // Слой по умолчанию для всей коллекции (например WallFurniture)
+	            String collectionLayer = collectionElement.getAttribute("layer");
 	            
 	            // Получаем все элементы Tileset
 	            NodeList tilesetNodes = collectionElement.getElementsByTagName("Tileset");
@@ -73,6 +75,13 @@ public class RandomCollection extends Collection
                     		newTileset.setRules(tilesetElement.getElementsByTagName("entry"));
                     	}                   	
 	            	}
+                    //Слой отрисовки: у набора приоритет над слоем всей коллекции
+                    if(tilesetElement.hasAttribute("layer")) {
+                    	newTileset.setLayer(tilesetElement.getAttribute("layer"));
+                    }
+                    else {
+                    	newTileset.setLayer(collectionLayer);
+                    }
 	            	newTileset.SetName(tilesetElement.getAttribute("name"));
 	            	String dirCountStr = tilesetElement.getAttribute("tileDirCount");
                     if (!dirCountStr.isEmpty()) {
@@ -129,6 +138,10 @@ public class RandomCollection extends Collection
 		 {
 			 throw new IllegalArgumentException("Коллекция - "+numberOfCollection+": В коллекции не может быть больше 2 типов");
 		 }
+		 if(types.isEmpty())
+		 {
+			 throw new IllegalArgumentException("Коллекция - "+numberOfCollection+": не задано ни одного объекта");
+		 }
 		 return types.get(0);
 	 }
 	 
@@ -173,33 +186,12 @@ public class RandomCollection extends Collection
 	 @Override
 	public ArrayList<String> getPickedTileset()
 		{			
-			ArrayList<String> PickedTileset = new ArrayList<>();
-			String NameOfPickedTileset = pickedTileset.getName();
-			ArrayList<Integer> Indexs = (ArrayList<Integer>) pickedTileset.getIndexs();
-			for(Integer j:Indexs)
-			{
-				PickedTileset.add(NameOfPickedTileset+"_0"+j);
-			}
-			return PickedTileset;
+			return pickedTileset.getTileNames();
 		} 
+	 @Override
 	 public ArrayList<Element> getPickedFurnitureWithRules()
 		{			
-			String NameOfPickedTileset = pickedTileset.getName();
-			ArrayList<Integer> Indexs = (ArrayList<Integer>) pickedTileset.getIndexs();
-			ArrayList<Element> Rules = (ArrayList<Element>) pickedTileset.getRuleOfPlacing();
-            for(Element entry:Rules){
-				NodeList tiles = entry.getElementsByTagName("tile");
-				if(tiles.getLength()==0){
-					throw new IllegalArgumentException("Незаданы tile " + NameOfPickedTileset); 
-				}
-				for (int i=0;i<tiles.getLength();i++) {
-					Element tileElement = (Element)tiles.item(i);	
-					int position = Integer.parseInt(tileElement.getAttribute("name"));
-					String tileName = NameOfPickedTileset + "_0" + Indexs.get(position);
-					tileElement.setAttribute("name", tileName);
-				}
-			}
-			return Rules;
+			return pickedTileset.getFurnitureWithRules();
 		} 
 	 @Override
 	 public String GetParameter()
@@ -209,14 +201,7 @@ public class RandomCollection extends Collection
 	 @Override
 		public ArrayList<String> getPickedFurniture()
 		{
-			ArrayList<String> PickedTileset = new ArrayList<>();
-			String NameOfPickedTileset = pickedTileset.getName();
-			ArrayList<Integer> Indexs = (ArrayList<Integer>) pickedTileset.getIndexs();
-			for(Integer j:Indexs)
-			{
-				PickedTileset.add(NameOfPickedTileset+"_0"+j);
-			}
-			return PickedTileset;
+			return pickedTileset.getTileNames();
 		}	 
 	 @Override
 	 public boolean isFurniture()
@@ -226,7 +211,7 @@ public class RandomCollection extends Collection
 	 @Override
 	 public boolean isPlaceble()
 	 {
-		 return ((Furniture)tilesGenerated.get(0)).placeble;
+		 return tilesGenerated.get(0).placeble;
 	 }
 	 @Override
 	 public LinkedList<UsedFurniture> getUsedFurniture(int Tileset)
@@ -234,14 +219,17 @@ public class RandomCollection extends Collection
 		 LinkedList<UsedFurniture> UsedFurniture = new LinkedList<>();
 		 for(ObjectTile Tile:tilesGenerated)
 		 {
-			 Furniture furniture = (Furniture) Tile;
-			 UsedFurniture.add(new UsedFurniture(Tileset,furniture.direction,furniture.x,furniture.y));
+			 UsedFurniture.add(new UsedFurniture(Tileset,Tile.direction,Tile.x,Tile.y));
 		 }
 		 return UsedFurniture;
 	 }
 	 @Override
 	 public boolean hasRuleOfPlacing(){
 		return pickedTileset.IsHaveRuleOfPlacing();
+	}
+	 @Override
+	 public String getLayer(){
+		return pickedTileset.getLayer();
 	}
 	 public void setOffsetX(int x) {
 		 for(ObjectTile tile:tilesGenerated) {

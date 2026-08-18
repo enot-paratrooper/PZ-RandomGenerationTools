@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Bedroom_Bed_2x2">
+<Tileset name="furniture_bedding_01" hasXsize="true" tileDirCount="8">
+<entry orient="W">
+   <tile x="0" y="0" name="0"/>
+   <tile x="0" y="1" name="1"/>
+   <tile x="1" y="0" name="2"/>
+   <tile x="1" y="1" name="3"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="4"/>
+   <tile x="0" y="1" name="5"/>
+   <tile x="1" y="0" name="6"/>
+   <tile x="1" y="1" name="7"/>
+</entry>
+<Tile>
+14
+</Tile>
+<Tile>
+12
+</Tile>
+<Tile>
+15
+</Tile>
+<Tile>
+13
+</Tile>
+<Tile>
+5
+</Tile>
+<Tile>
+4
+</Tile>
+<Tile>
+7
+</Tile>
+<Tile>
+6
+</Tile>
+</Tileset>
+</Collection>

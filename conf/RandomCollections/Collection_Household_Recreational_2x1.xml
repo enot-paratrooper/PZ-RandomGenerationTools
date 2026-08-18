@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Recreational_2x1">
+<Tileset name="recreational_01" hasXsize="true" tileDirCount="2">
+<entry orient="N">
+   <tile x="0" y="0" name="0"/>
+   <tile x="1" y="0" name="1"/>
+</entry>
+<Tile>
+8
+</Tile>
+<Tile>
+9
+</Tile>
+</Tileset>
+<Tileset name="recreational_01" hasXsize="true" tileDirCount="2">
+<entry orient="N">
+   <tile x="0" y="0" name="0"/>
+   <tile x="1" y="0" name="1"/>
+</entry>
+<Tile>
+10
+</Tile>
+<Tile>
+11
+</Tile>
+</Tileset>
+</Collection>

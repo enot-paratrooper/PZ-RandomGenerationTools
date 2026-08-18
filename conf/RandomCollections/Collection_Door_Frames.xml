@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Категория door_frames: West, North -->
+<Collection name="Door_Frames">
+<Tileset name="fixtures_doors_frames_01" tileDirCount="2">
+<Tile>
+0
+</Tile>
+<Tile>
+1
+</Tile>
+</Tileset>
+<Tileset name="fixtures_doors_frames_01" tileDirCount="2">
+<Tile>
+2
+</Tile>
+<Tile>
+3
+</Tile>
+</Tileset>
+<Tileset name="fixtures_doors_frames_01" tileDirCount="2">
+<Tile>
+4
+</Tile>
+<Tile>
+5
+</Tile>
+</Tileset>
+<Tileset name="fixtures_doors_frames_01" tileDirCount="2">
+<Tile>
+6
+</Tile>
+<Tile>
+7
+</Tile>
+</Tileset>
+<Tileset name="fixtures_doors_frames_01" tileDirCount="2">
+<Tile>
+8
+</Tile>
+<Tile>
+9
+</Tile>
+</Tileset>
+</Collection>

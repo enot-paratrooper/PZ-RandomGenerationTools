@@ -6,6 +6,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 public abstract class Collection {
+	public int relativeNumberLocation = -1;
 	
 	public String GetTypeOfObject() {
 		return null;
@@ -41,5 +42,12 @@ public abstract class Collection {
 	}
     public boolean hasRuleOfPlacing(){
 		return false;
+	}
+    /**
+     * Слой отрисовки мебели в .tbx (например WallFurniture).
+     * null - слой по умолчанию, атрибут layer не пишется.
+     */
+    public String getLayer(){
+		return null;
 	}
 }

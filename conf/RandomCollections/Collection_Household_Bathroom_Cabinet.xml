@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Bathroom_Cabinet" layer="WallFurniture">
+<Tileset name="fixtures_bathroom_01" tileDirCount="2">
+<Tile>
+29
+</Tile>
+<Tile>
+28
+</Tile>
+</Tileset>
+</Collection>

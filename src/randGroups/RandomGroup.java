@@ -9,14 +9,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import containers.CommonData;
-import randRoomGen.NonrandomElement;
 
 import static tools.StringTools.parseRanges;
 import static commonFunc.LoadFunc.loadRandColl;
 import static commonFunc.LoadFunc.loadNonRandE;
+import static commonFunc.LoadFunc.loadOpenings;
 
 public class RandomGroup {
 	String Name;
@@ -35,7 +34,7 @@ public class RandomGroup {
 		Name ="";
 		rangeX = parseRanges(x);
 		rangeY = parseRanges(y);
-		initializeСoord();
+		initializeCoord();
 		 try {
 		String fileName = "C:\\Users\\I\\eclipse-workspace\\RandomRoomGenerator\\conf\\RandomGroups\\Group_" + groupName + ".xml";
         
@@ -58,12 +57,17 @@ public class RandomGroup {
         loadRandColl(data,groupElement,this.x,this.y);
         // Загрузка NonrandomElements
         loadNonRandE(data,groupElement,this.x,this.y);
+        // Загрузка дверей, окон и лестниц группы
+        loadOpenings(data,groupElement,this.x,this.y);
 		}catch (Exception e) {
 	            System.err.println("Ошибка загрузки группы '" + groupName + "': " + e.getMessage());
 	            e.printStackTrace();
 	        }
 	}
-	private void initializeСoord() {
+	private void initializeCoord() {
+		if(rangeX.isEmpty() || rangeY.isEmpty()) {
+			throw new IllegalArgumentException("Не заданы координаты группы");
+		}
 		this.x = rangeX.get(data.random.nextInt(rangeX.size()));
 		this.y = rangeY.get(data.random.nextInt(rangeY.size()));
 	}

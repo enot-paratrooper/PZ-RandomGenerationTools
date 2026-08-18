@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Walls_Garage_01">
+<Tileset name="walls_garage_01" tileDirCount="8">
+<Tile>
+32
+</Tile>
+<Tile>
+33
+</Tile>
+<Tile>
+34
+</Tile>
+<Tile>
+35
+</Tile>
+<Tile>
+40
+</Tile>
+<Tile>
+41
+</Tile>
+<Tile>
+42
+</Tile>
+<Tile>
+43
+</Tile>
+</Tileset>
+<Tileset name="walls_garage_01" tileDirCount="8">
+<Tile>
+36
+</Tile>
+<Tile>
+37
+</Tile>
+<Tile>
+38
+</Tile>
+<Tile>
+39
+</Tile>
+<Tile>
+44
+</Tile>
+<Tile>
+45
+</Tile>
+<Tile>
+46
+</Tile>
+<Tile>
+47
+</Tile>
+</Tileset>
+</Collection>

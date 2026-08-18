@@ -25,6 +25,15 @@ public class StringTools {
         return result;
     }
     
+    /**
+     * Полное имя тайла: имя набора + индекс, дополненный нулями до трёх знаков.
+     * Раньше склейка была "имя" + "_0" + индекс, из-за чего индекс 5 давал
+     * "..._05" вместо "..._005", а индекс 100 - "..._0100".
+     */
+    public static String tileName(String tilesetName, int index) {
+        return String.format("%s_%03d", tilesetName, index);
+    }
+    
     public static String removeLastUnderscorePartRegex(String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -114,39 +123,9 @@ public class StringTools {
     
     public static List<Integer> parseRanges(String rangesText) {
     	ArrayList<Integer> Indexs= new ArrayList<>();
-        // Удаляем лишние пробелы и разбиваем по запятым
-        String[] rangeParts = rangesText.split(";");
-        
-        for (String rangePart : rangeParts) {
-            rangePart = rangePart.trim();
-            if (rangePart.isEmpty()) continue;
-            
-            // Проверяем формат диапазона "start-end"
-            if (rangePart.contains("-")) {
-                String[] bounds = rangePart.split("-");
-                if (bounds.length == 2) {
-                    try {
-                        int start = Integer.parseInt(bounds[0].trim());
-                        int end = Integer.parseInt(bounds[1].trim());
-                        
-                        // Добавляем все числа в диапазоне
-                        for (int i = start; i <= end; i++) {
-                        	Indexs.add(i);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Некорректный формат диапазона: " + rangePart);
-                    }
-                }
-            } else {
-                // Если это одиночное число
-                try {
-                    int singleIndex = Integer.parseInt(rangePart.trim());
-                    Indexs.add(singleIndex);
-                } catch (NumberFormatException e) {
-                    System.err.println("Некорректный индекс: " + rangePart);
-                }
-            }
-        }
-        return Indexs;
+    	if (rangesText == null) {
+    		return Indexs;
+    	}
+        return parseRanges(rangesText, Indexs);
     }
 }

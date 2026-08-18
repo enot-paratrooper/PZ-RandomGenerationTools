@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Kitchen_Microwave">
+<Tileset name="appliances_cooking_01" tileDirCount="2">
+<Tile>
+32
+</Tile>
+<Tile>
+33
+</Tile>
+</Tileset>
+</Collection>

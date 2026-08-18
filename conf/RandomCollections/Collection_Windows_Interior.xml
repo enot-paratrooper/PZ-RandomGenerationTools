@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Категория windows: West, North -->
+<Collection name="Windows_Interior">
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+0
+</Tile>
+<Tile>
+1
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+8
+</Tile>
+<Tile>
+9
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+16
+</Tile>
+<Tile>
+17
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+24
+</Tile>
+<Tile>
+25
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+32
+</Tile>
+<Tile>
+33
+</Tile>
+</Tileset>
+<Tileset name="fixtures_windows_01" tileDirCount="2">
+<Tile>
+56
+</Tile>
+<Tile>
+57
+</Tile>
+</Tileset>
+</Collection>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Laundry_Dryer">
+<Tileset name="appliances_laundry_01" tileDirCount="4">
+<Tile>
+5
+</Tile>
+<Tile>
+4
+</Tile>
+<Tile>
+7
+</Tile>
+<Tile>
+6
+</Tile>
+</Tileset>
+</Collection>

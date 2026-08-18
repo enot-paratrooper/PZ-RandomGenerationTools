@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="5" sizeY="3" name="Laundry">
+<tiles>
+0,0,0,1,1,
+1,1,1,1,1,
+1,1,1,1,1
+</tiles>
+<RandomCollection num="1" name="Walls_Garage_01">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Floors_Interior_Fixed">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Shelving_2x1">
+<object type="furniture" orient="N" x="0" y="1"/>
+</RandomCollection>
+<RandomCollection num="4" name="Household_Laundry_Dryer">
+<object type="furniture" orient="E" x="4" y="1"/>
+</RandomCollection>
+<RandomCollection num="5" name="Household_Laundry_Washer">
+<object type="furniture" orient="E" x="4" y="2"/>
+</RandomCollection>
+<RandomCollection num="6" name="Household_Trashcontainers_Bin">
+<object type="furniture" orient="N" x="4" y="0"/>
+</RandomCollection>
+</room>

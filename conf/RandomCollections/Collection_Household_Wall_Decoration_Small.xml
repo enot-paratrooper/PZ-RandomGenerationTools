@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Wall_Decoration_Small" layer="WallFurniture">
+<Tileset name="walls_decoration_01" tileDirCount="2">
+<Tile>
+4
+</Tile>
+<Tile>
+5
+</Tile>
+</Tileset>
+<Tileset name="walls_decoration_01" tileDirCount="2">
+<Tile>
+51
+</Tile>
+<Tile>
+50
+</Tile>
+</Tileset>
+</Collection>

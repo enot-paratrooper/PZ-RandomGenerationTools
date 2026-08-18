@@ -3,7 +3,6 @@ package randRoomGen;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,6 +18,7 @@ import randGroups.RandomGroup;
 import static commonFunc.LoadFunc.loadRandColl;
 import static commonFunc.LoadFunc.loadNonRandE;
 import static commonFunc.LoadFunc.loadRandGroup;
+import static commonFunc.LoadFunc.loadOpenings;
 
 public class Room {	
 	
@@ -36,6 +36,13 @@ public class Room {
 	private int Floor;
 	private int GrimeFloor;
 	private int GrimeWall;
+	// Наборы тайлов проёмов. Задаются такими же RoomParameter, как стены и пол.
+	private int Door;
+	private int DoorFrame;
+	private int Window;
+	private int Curtains;
+	private int Shutters;
+	private int Stairs;
 	
 	private List<RandomGroup> RandomGroups = new ArrayList<RandomGroup>();
 
@@ -93,6 +100,8 @@ public class Room {
         loadRandColl(data,roomElement);
         // Загрузка NonrandomElements
         loadNonRandE(data,roomElement);
+        // Загрузка дверей, окон и лестниц
+        loadOpenings(data,roomElement);
         // Загрузка RandomGroups
         loadRandGroup(data,roomElement,RandomGroups);
 		TileSetEnd = data.RandomCollections.size() + data.NonrandomElements.size();
@@ -114,6 +123,12 @@ public class Room {
 			Floor=0;
 			GrimeFloor=0;
 			GrimeWall=0;
+			Door=0;
+			DoorFrame=0;
+			Window=0;
+			Curtains=0;
+			Shutters=0;
+			Stairs=0;
 			int j =1;
 			for(int i=TileSetStart;i<TileSetEnd;i++) {
 				Collection coll =data.Collections.get(i);
@@ -127,6 +142,14 @@ public class Room {
 					case "Floor": Floor =j;break;
 					case "GrimeFloor": GrimeFloor =j;break;
 					case "GrimeWall": GrimeWall =j;break;
+					case "Door": if(Door==0){Door=j;}; break;
+					case "DoorFrame": if(DoorFrame==0){DoorFrame=j;}break;
+					case "Window": Window =j;break;
+					case "Curtains": Curtains =j;break;
+					case "Shutters": Shutters =j;break;
+					case "Stairs": Stairs =j;break;
+					default:
+						throw new IllegalArgumentException("Неизвестный параметр комнаты: " + param);
 					}
 					j++;
 				}
@@ -137,7 +160,7 @@ public class Room {
 			 System.err.println("Ошибка загрузки параметров" + e.getMessage());
 	            e.printStackTrace();
 		}
-	}	
+}	
 	public ArrayList<String> getTypesOfTiles()
 	{
 		ArrayList<String> TypesOfTiles = new ArrayList<String>();
@@ -204,6 +227,10 @@ public class Room {
 	{
 		return SizeY;
 	}
+	public int[][] getRoomCells()
+	{
+		return roomCells;
+	}
 	public String getColor()
 	{
 		return Color.get(0)+" "+Color.get(1)+" "+Color.get(2);
@@ -231,6 +258,36 @@ public class Room {
     // Get метод для GrimeWall
     public int getGrimeWall() {
         return GrimeWall;
+    }
+    
+    // Get метод для Door
+    public int getDoor() {
+        return Door;
+    }
+    
+    // Get метод для DoorFrame
+    public int getDoorFrame() {
+        return DoorFrame;
+    }
+    
+    // Get метод для Window
+    public int getWindow() {
+        return Window;
+    }
+    
+    // Get метод для Curtains
+    public int getCurtains() {
+        return Curtains;
+    }
+    
+    // Get метод для Shutters
+    public int getShutters() {
+        return Shutters;
+    }
+    
+    // Get метод для Stairs
+    public int getStairs() {
+        return Stairs;
     }
     
     public String getRoomCellsString()

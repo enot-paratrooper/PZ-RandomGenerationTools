@@ -8,12 +8,21 @@ import randRoomGen.Collection;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
 import randRoomGen.UsedFurniture;
+import randRoomGen.ObjectTiles.ObjectTile;
+import randRoomGen.ObjectTiles.TileParameter;
 import tools.linker.Linker;
 
 public class CommonData {
 	public ArrayList<RandomCollection> RandomCollections = new ArrayList<>();
 	public List<NonrandomElement> NonrandomElements = new ArrayList<>();
 	public List<Collection> Collections = new ArrayList<>();
+	
+	/**
+	 * Двери, окна и лестницы. Хранятся отдельно от коллекций: набор тайлов
+	 * для них задаётся параметрами комнаты (Door, DoorFrame, Window, Curtains,
+	 * Shutters, Stairs), а сам объект несёт только координаты и направление.
+	 */
+	public List<ObjectTile> Openings = new ArrayList<>();
 	
 	public List<Integer> UsedUserTiles= new ArrayList<>();
 	public List<Integer> UsedTiles= new ArrayList<>();
@@ -88,14 +97,43 @@ public class CommonData {
 			}
 		}
 		}catch(Exception e) {
-			 System.err.println("Ошибка создания ссылок" + e.getMessage());
+			 System.err.println("Ошибка создания ссылок в NonrandomElement" + e.getMessage());
 	            e.printStackTrace();
 		}
+		try {
+			for(ObjectTile Opening:Openings) {
+				for(TileParameter Parameter: Opening.TileParamers) {
+					if(Parameter.hasLink) {
+						Parameter.TileNum = RandomCollections.get(
+								linker.getLinkNumber(Parameter.LinkName))
+								.relativeNumberLocation;
+					}
+				}
+			}
+			}catch(Exception e) {
+				 System.err.println("Ошибка создания ссылок в Openings" + e.getMessage());
+		            e.printStackTrace();
+			}
 	}
 	public void MergeCollections()
 	{       
 		// Объеденение коллекций
 		Collections.addAll(RandomCollections);
 		Collections.addAll(NonrandomElements);
+	}
+	public void DetermineQueueType() {
+		int iterTileSet = 1;
+		int iterFurnitureTileSet = 0;
+		for(Collection coll:Collections) {
+			String typeOfObject = coll.GetTypeOfObject();
+            if ("RoomParameter".equals(typeOfObject)) {
+            	coll.relativeNumberLocation = iterTileSet;
+            	iterTileSet++;
+            }
+            else if("furniture".equals(typeOfObject)) {
+            	coll.relativeNumberLocation = iterFurnitureTileSet;
+            	iterFurnitureTileSet++;
+            }
+		}
 	}
 }

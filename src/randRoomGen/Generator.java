@@ -10,8 +10,9 @@ public class Generator {
 	{		
 		CommonData data = new CommonData();
 		Room room = new Room(data);
-		room.loadRoom("Kitchen_7_4");		
+		room.loadRoom("SS2_Bathroom_3_4");		
 		data.MergeCollections();
+		data.DetermineQueueType();
 		data.InitTileSets();
 		data.InitLinks();	
 		room.InitRoomparameters();

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Rugs_2x3">
+<Tileset name="floors_rugs_01" hasXsize="true" tileDirCount="8">
+<entry orient="W">
+   <tile x="0" y="0" name="2"/>
+   <tile x="0" y="1" name="1"/>
+   <tile x="0" y="2" name="0"/>
+   <tile x="1" y="0" name="5"/>
+   <tile x="1" y="1" name="4"/>
+   <tile x="1" y="2" name="3"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="2"/>
+   <tile x="0" y="1" name="0"/>
+   <tile x="1" y="0" name="6"/>
+   <tile x="1" y="1" name="7"/>
+   <tile x="2" y="0" name="5"/>
+   <tile x="2" y="1" name="3"/>
+</entry>
+<Tile>
+16
+</Tile>
+<Tile>
+18
+</Tile>
+<Tile>
+22
+</Tile>
+<Tile>
+17
+</Tile>
+<Tile>
+19
+</Tile>
+<Tile>
+23
+</Tile>
+<Tile>
+21
+</Tile>
+<Tile>
+20
+</Tile>
+</Tileset>
+<Tileset name="floors_rugs_01" hasXsize="true" tileDirCount="8">
+<entry orient="W">
+   <tile x="0" y="0" name="2"/>
+   <tile x="0" y="1" name="1"/>
+   <tile x="0" y="2" name="0"/>
+   <tile x="1" y="0" name="5"/>
+   <tile x="1" y="1" name="4"/>
+   <tile x="1" y="2" name="3"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="2"/>
+   <tile x="0" y="1" name="0"/>
+   <tile x="1" y="0" name="6"/>
+   <tile x="1" y="1" name="7"/>
+   <tile x="2" y="0" name="5"/>
+   <tile x="2" y="1" name="3"/>
+</entry>
+<Tile>
+8
+</Tile>
+<Tile>
+10
+</Tile>
+<Tile>
+14
+</Tile>
+<Tile>
+9
+</Tile>
+<Tile>
+11
+</Tile>
+<Tile>
+15
+</Tile>
+<Tile>
+13
+</Tile>
+<Tile>
+12
+</Tile>
+</Tileset>
+</Collection>

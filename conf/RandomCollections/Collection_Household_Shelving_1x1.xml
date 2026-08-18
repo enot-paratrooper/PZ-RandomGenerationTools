@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Shelving_1x1">
+<Tileset name="furniture_shelving_01" tileDirCount="2">
+<Tile>
+23
+</Tile>
+<Tile>
+19
+</Tile>
+</Tileset>
+</Collection>

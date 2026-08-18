@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Household_Armchair">
+<Tileset name="furniture_seating_indoor_01" tileDirCount="2">
+<Tile>
+47
+</Tile>
+<Tile>
+46
+</Tile>
+</Tileset>
+</Collection>
