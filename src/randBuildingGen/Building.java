@@ -20,5 +20,5 @@ public class Building {
 	private int RoofTop=0;
 	private int GrimeWall=0;
 	
-	private int [][] buildinCells;
+	private int [][][] buildinCells;
 }
