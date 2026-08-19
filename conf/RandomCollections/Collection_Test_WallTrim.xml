@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_WallTrim">
+<Tileset name="walls_interior_detailing_01" tileDirCount="8">
+<Tile>
+16-19;24-27
+</Tile>
+<Tile>
+32-35;40-43
+</Tile>
+<Tile>
+36-39;44-47
+</Tile>
+<Tile>
+48-51;56-59
+</Tile>
+<Tile>
+52-55;60-63
+</Tile>
+<Tile>
+64-67;72-75
+</Tile>
+<Tile>
+68-71;76-79
+</Tile>
+<Tile>
+84-87;92-95
+</Tile>
+</Tileset>
+</Collection>

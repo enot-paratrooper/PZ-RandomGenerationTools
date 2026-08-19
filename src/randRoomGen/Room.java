@@ -25,6 +25,9 @@ public class Room {
 	private String Name;
 	private int SizeX;
 	private int SizeY;
+	private int x;
+	private int y;
+	private int floor;
 	private int [][] roomCells;
 	private String roomCellsString;
 	
@@ -51,13 +54,16 @@ public class Room {
 		this.data = data;
 	}
 	
-	public void loadRoom(String roomName)
+	public void loadRoom(String roomName, int x, int y, int z)
 	{
-		Name ="";
-		SizeX=0;
-		SizeY=0;
+		this.Name ="";
+		this.SizeX=0;
+		this.SizeY=0;
+		this.x=x;
+		this.y=y;
+		this.floor=z;
 		 try {
-		String fileName = "C:\\Users\\I\\eclipse-workspace\\RandomRoomGenerator\\conf\\RandomRoom\\" + roomName + ".xml";
+		String fileName = "..\\RandomRoomGenerator\\conf\\RandomRoom\\" + roomName + ".xml";
         
         // Пытаемся загрузить файл из ресурсов
         InputStream inputStream = getClass().getResourceAsStream(fileName);
@@ -97,13 +103,13 @@ public class Room {
         roomCells = parseGrid(roomCellsString);
         TileSetStart = data.Collections.size();
         // Загрузка RandomCollection
-        loadRandColl(data,roomElement);
+        loadRandColl(data,roomElement,this.x,this.y);
         // Загрузка NonrandomElements
-        loadNonRandE(data,roomElement);
+        loadNonRandE(data,roomElement,this.x,this.y);
         // Загрузка дверей, окон и лестниц
-        loadOpenings(data,roomElement);
+        loadOpenings(data,roomElement,this.x,this.y);
         // Загрузка RandomGroups
-        loadRandGroup(data,roomElement,RandomGroups);
+        loadRandGroup(data,roomElement,RandomGroups,this.x,this.y);
 		TileSetEnd = data.RandomCollections.size() + data.NonrandomElements.size();
 		}catch (Exception e) {
 	            System.err.println("Ошибка загрузки комнаты '" + roomName + "': " + e.getMessage());
@@ -142,12 +148,12 @@ public class Room {
 					case "Floor": Floor =j;break;
 					case "GrimeFloor": GrimeFloor =j;break;
 					case "GrimeWall": GrimeWall =j;break;
-					case "Door": if(Door==0){Door=j;}; break;
-					case "DoorFrame": if(DoorFrame==0){DoorFrame=j;}break;
-					case "Window": Window =j;break;
-					case "Curtains": Curtains =j;break;
-					case "Shutters": Shutters =j;break;
-					case "Stairs": Stairs =j;break;
+					case "Door": if(Door==0) {Door=j;}; break;
+					case "DoorFrame": if(DoorFrame==0) {DoorFrame=j;}break;
+					case "Window": if(Window==0) { Window=j;}break;
+					case "Curtains": if(Curtains==0) {Curtains=j;}break;
+					case "Shutters": if(Shutters==0) {Shutters=j;}break;
+					case "Stairs": if(Stairs==0) { Stairs=j;}break;
 					default:
 						throw new IllegalArgumentException("Неизвестный параметр комнаты: " + param);
 					}

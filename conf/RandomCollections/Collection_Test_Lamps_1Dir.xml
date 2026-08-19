@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Lamps_1Dir">
+<Tileset name="lighting_indoor_01" tileDirCount="1">
+<Tile>
+10-13
+</Tile>
+</Tileset>
+</Collection>

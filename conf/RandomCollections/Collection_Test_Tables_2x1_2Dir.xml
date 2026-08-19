@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Tables_2x1_2Dir">
+<Tileset name="furniture_tables_high_01" hasXsize="true" tileDirCount="4">
+<entry orient="W">
+   <tile x="0" y="0" name="0"/>
+   <tile x="0" y="1" name="1"/>
+</entry>
+<entry orient="N">
+   <tile x="0" y="0" name="2"/>
+   <tile x="1" y="0" name="3"/>
+</entry>
+<Tile>
+49;48;50;51
+</Tile>
+<Tile>
+55;54;52;53
+</Tile>
+<Tile>
+33;32;34;35
+</Tile>
+<Tile>
+39;38;36;37
+</Tile>
+<Tile>
+43;42;40;41
+</Tile>
+<Tile>
+47;46;44;45
+</Tile>
+<Tile>
+59;58;56;57
+</Tile>
+</Tileset>
+</Collection>

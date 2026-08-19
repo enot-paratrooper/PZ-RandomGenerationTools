@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Walls_Interior">
+<Tileset name="walls_interior_house_01" tileDirCount="8">
+<Tile>
+16-19;24-27
+</Tile>
+<Tile>
+20-23;28-31
+</Tile>
+<Tile>
+32-35;40-43
+</Tile>
+<Tile>
+36-39;44-47
+</Tile>
+<Tile>
+48-51;56-59
+</Tile>
+<Tile>
+52-55;60-63
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_02" tileDirCount="8">
+<Tile>
+16-19;24-27
+</Tile>
+<Tile>
+32-35;40-43
+</Tile>
+<Tile>
+48-51;56-59
+</Tile>
+<Tile>
+52-55;60-63
+</Tile>
+</Tileset>
+<Tileset name="walls_interior_house_04" tileDirCount="8">
+<Tile>
+64-67;72-75
+</Tile>
+<Tile>
+68-71;76-79
+</Tile>
+<Tile>
+80-83;88-91
+</Tile>
+<Tile>
+84-87;92-95
+</Tile>
+</Tileset>
+</Collection>

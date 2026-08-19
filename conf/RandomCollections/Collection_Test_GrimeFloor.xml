@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_GrimeFloor">
+<Tileset name="overlay_grime_floor_01" tileDirCount="8">
+<Tile>
+28;29;37;36;39;30;31;38
+</Tile>
+</Tileset>
+</Collection>

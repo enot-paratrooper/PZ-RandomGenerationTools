@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Trash_2Dir">
+<Tileset name="trashcontainers_01" tileDirCount="2">
+<Tile>
+19;18
+</Tile>
+<Tile>
+24;25
+</Tile>
+<Tile>
+26;27
+</Tile>
+</Tileset>
+</Collection>

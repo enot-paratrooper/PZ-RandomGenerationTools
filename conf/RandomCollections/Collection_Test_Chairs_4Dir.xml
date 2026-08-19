@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Chairs_4Dir">
+<Tileset name="furniture_seating_indoor_01" tileDirCount="4">
+<Tile>
+32-35
+</Tile>
+<Tile>
+36-39
+</Tile>
+<Tile>
+40-43
+</Tile>
+<Tile>
+49;50;48;51
+</Tile>
+<Tile>
+53;54;52;55
+</Tile>
+<Tile>
+56-59
+</Tile>
+<Tile>
+61;60;63;62
+</Tile>
+</Tileset>
+<Tileset name="furniture_seating_indoor_03" tileDirCount="4">
+<Tile>
+24-27
+</Tile>
+<Tile>
+29;28;30;31
+</Tile>
+<Tile>
+40-43
+</Tile>
+<Tile>
+44-47
+</Tile>
+<Tile>
+48-51
+</Tile>
+</Tileset>
+</Collection>

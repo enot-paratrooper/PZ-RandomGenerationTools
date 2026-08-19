@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<building name="test">
+#define varChairs = RandomCollection.num(2);
+<RandomCollection num="1" name="Test_Walls_Interior">
+<object type="BuildingParameter" parameter="ExteriorWall"/>
+</RandomCollection>
+<!-- источник ссылки с объектами: тумбы ряд y=16, x=0..3 -->
+<RandomCollection num="2" name="Test_Chairs_4Dir"/>
+<NonrandomElement num="1">
+ <tile_entry category="grime_wall">
+  <tile enum="West" tile="overlay_grime_wall_01_016"/>
+  <tile enum="North" tile="overlay_grime_wall_01_017"/>
+  <tile enum="NorthWest" tile="overlay_grime_wall_01_018"/>
+  <tile enum="SouthEast" tile="overlay_grime_wall_01_019"/>
+  <tile enum="WestWindow" tile="overlay_grime_wall_01_024"/>
+  <tile enum="NorthWindow" tile="overlay_grime_wall_01_025"/>
+  <tile enum="WestDoor" tile="overlay_grime_wall_01_026"/>
+  <tile enum="NorthDoor" tile="overlay_grime_wall_01_027"/>
+  <tile enum="WestTrim" tile="overlay_grime_wall_01_040"/>
+  <tile enum="NorthTrim" tile="overlay_grime_wall_01_041"/>
+  <tile enum="NorthWestTrim" tile="overlay_grime_wall_01_042"/>
+  <tile enum="SouthEastTrim" tile="overlay_grime_wall_01_043"/>
+  <tile enum="WestDoubleLeft" tile="overlay_grime_wall_01_044"/>
+  <tile enum="WestDoubleRight" tile="overlay_grime_wall_01_045"/>
+  <tile enum="NorthDoubleLeft" tile="overlay_grime_wall_01_046"/>
+  <tile enum="NorthDoubleRight" tile="overlay_grime_wall_01_047"/>
+ </tile_entry>
+ <object type="BuildingParameter" parameter="GrimeWall"/>
+</NonrandomElement>
+
+<room name="TestRoom" x="0" y="0" floor="0">
+<room name="TestRoom" x="0" y="29" floor="0">
+
+<NonrandomElement num="2" globalvariable="varChairs">
+<object type="furniture" orient="W" x="5" y="27"/>
+</NonrandomElement>
+</building>

@@ -14,6 +14,8 @@ import randRoomGen.RandomCollection;
 import randRoomGen.ObjectTiles.GlobalParameter;
 import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.ObjectTileFactory;
+import randRoomGen.Room;
+import static tools.RandTools.chance;
 
 public class LoadFunc {
 
@@ -96,7 +98,7 @@ public class LoadFunc {
         }
 	}
 	
-	public static void loadRandGroup(CommonData data, Element roomElement,List<RandomGroup> RandomGroups) {
+	public static void loadRandGroup(CommonData data, Element roomElement,List<RandomGroup> RandomGroups, int x, int y) {
 		NodeList randomGroupsNodes = roomElement.getElementsByTagName("RandomGroup");
         for(int i=0;i<randomGroupsNodes.getLength();i++) {
         	Element randomGroupElement = (Element)randomGroupsNodes.item(i);
@@ -105,11 +107,33 @@ public class LoadFunc {
         	for(int j=0;j<groopObjectsNodes.getLength();j++) {
             	RandomGroup newRandomGroup = new RandomGroup(data);
         		Element groopObjectsElement = (Element) groopObjectsNodes.item(j);
-        		String x =  groopObjectsElement.getAttribute("x");
-        		String y =  groopObjectsElement.getAttribute("y");
-        		newRandomGroup.loadRandomGroups(name,x,y);
+        		String rangeX =  groopObjectsElement.getAttribute("x");
+        		String rangeY =  groopObjectsElement.getAttribute("y");
+        		boolean placeble = true;
+        		if (groopObjectsElement.hasAttribute("void")) {
+        			placeble= chance(groopObjectsElement.getAttribute("void"));
+        		}
+        		if(placeble) {
+        		newRandomGroup.loadRandomGroup(name,rangeX,rangeY,x,y);
+        		}
         		RandomGroups.add(newRandomGroup);
         	}
         }
+	}
+	public static void loadRandRoom(CommonData data, Element buildindElement) {
+		NodeList randomRoomsNodes = buildindElement.getElementsByTagName("room");
+		if(randomRoomsNodes.getLength()==0) {
+			throw new IllegalArgumentException("Ошибка загрузки задния - "+buildindElement.getAttribute("name")+" - отсутствуют комнаты");
+		}
+		for(int i=0;i<randomRoomsNodes.getLength();i++) {
+			Element randomRoomElement = (Element)randomRoomsNodes.item(i);
+        	String name = randomRoomElement.getAttribute("name");
+        	int x =  Integer.parseInt(randomRoomElement.getAttribute("x"));
+    		int y =  Integer.parseInt(randomRoomElement.getAttribute("y"));
+    		int floor =  Integer.parseInt(randomRoomElement.getAttribute("floor"));
+        	Room newRoom = new Room(data);
+        	newRoom.loadRoom(name,x,y,floor);
+        	data.randomRooms.add(newRoom);
+		}
 	}
 }

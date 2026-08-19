@@ -7,13 +7,15 @@ import java.util.Random;
 import randRoomGen.Collection;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
+import randRoomGen.Room;
 import randRoomGen.UsedFurniture;
 import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.TileParameter;
 import tools.linker.Linker;
 
 public class CommonData {
-	public ArrayList<RandomCollection> RandomCollections = new ArrayList<>(30);
+	public List<Room> randomRooms = new ArrayList<>(10);
+	public List<RandomCollection> RandomCollections = new ArrayList<>(30);
 	public List<NonrandomElement> NonrandomElements = new ArrayList<>(30);
 	public List<Collection> Collections = new ArrayList<>(60);
 	public List<Collection> usedFurniture = new ArrayList<>(40);

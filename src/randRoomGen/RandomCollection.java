@@ -43,7 +43,7 @@ public class RandomCollection extends Collection
 	        	for(String collectionName:collectionNames)
 	        	{
 	            // Формируем имя файла
-	            String fileName = "C:\\Users\\I\\eclipse-workspace\\RandomRoomGenerator\\conf\\RandomCollections\\Collection_" + collectionName + ".xml";
+	            String fileName = "..\\RandomRoomGenerator\\conf\\RandomCollections\\Collection_" + collectionName + ".xml";
 	            
 	            // Пытаемся загрузить файл из ресурсов
 	            InputStream inputStream = getClass().getResourceAsStream(fileName);

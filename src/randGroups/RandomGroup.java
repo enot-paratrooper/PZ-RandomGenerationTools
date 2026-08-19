@@ -23,20 +23,20 @@ public class RandomGroup {
 	private int y;
 	private List<Integer> rangeX;
 	private List<Integer> rangeY;
-	private CommonData data;
+	private CommonData data;	
 		
 	public RandomGroup(CommonData data){
 		this.data = data;
 	}
 	
-	public void loadRandomGroups(String groupName, String x , String y)
+	public void loadRandomGroup(String groupName, String rangeXrelative , String rangeYrelative, int xGlobal, int yGlobal)
 	{
 		Name ="";
-		rangeX = parseRanges(x);
-		rangeY = parseRanges(y);
-		initializeCoord();
+		this.rangeX = parseRanges(rangeXrelative);
+		this.rangeY = parseRanges(rangeYrelative);
+		initializeCoord(xGlobal,yGlobal);
 		 try {
-		String fileName = "C:\\Users\\I\\eclipse-workspace\\RandomRoomGenerator\\conf\\RandomGroups\\Group_" + groupName + ".xml";
+		String fileName = "..\\RandomRoomGenerator\\conf\\RandomGroups\\Group_" + groupName + ".xml";
         
         // Пытаемся загрузить файл из ресурсов
         InputStream inputStream = getClass().getResourceAsStream(fileName);
@@ -58,17 +58,17 @@ public class RandomGroup {
         // Загрузка NonrandomElements
         loadNonRandE(data,groupElement,this.x,this.y);
         // Загрузка дверей, окон и лестниц группы
-        loadOpenings(data,groupElement,this.x,this.y);
+        loadOpenings(data,groupElement,this.x,this.y);   
 		}catch (Exception e) {
 	            System.err.println("Ошибка загрузки группы '" + groupName + "': " + e.getMessage());
 	            e.printStackTrace();
 	        }
 	}
-	private void initializeCoord() {
+	private void initializeCoord(int x, int y) {
 		if(rangeX.isEmpty() || rangeY.isEmpty()) {
 			throw new IllegalArgumentException("Не заданы координаты группы");
 		}
-		this.x = rangeX.get(data.random.nextInt(rangeX.size()));
-		this.y = rangeY.get(data.random.nextInt(rangeY.size()));
+		this.x = rangeX.get(CommonData.random.nextInt(rangeX.size()))+x;
+		this.y = rangeY.get(CommonData.random.nextInt(rangeY.size()))+y;
 	}
 }

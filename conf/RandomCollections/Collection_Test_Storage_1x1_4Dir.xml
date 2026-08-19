@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Collection name="Test_Storage_1x1_4Dir">
+<Tileset name="furniture_storage_02" tileDirCount="4">
+<Tile>
+16-19
+</Tile>
+<Tile>
+24-27
+</Tile>
+<Tile>
+12-15
+</Tile>
+<Tile>
+29;28;31;30
+</Tile>
+</Tileset>
+</Collection>
