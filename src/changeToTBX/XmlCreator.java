@@ -160,7 +160,7 @@ public class XmlCreator {
                 floorElement.appendChild(objectElement);
             }
             //Запись дверей, окон и лестниц
-            SetOpenings(floorElement, data, room, doc);
+            //SetOpenings(floorElement, data, room, doc);
 
             usedFurnitureElement.setTextContent(data.getUsedFurnitureTiles());
             Element roomsElement = doc.createElement("rooms");
@@ -235,6 +235,7 @@ public class XmlCreator {
      * Ссылки на наборы тайлов берутся из параметров комнаты, но объект может
      * переопределить их своими атрибутами Tile/FrameTile/CurtainsTile/ShuttersTile.
      */
+    /**
     private static void SetOpenings(Element floorElement, CommonData data, Room room, Document doc) {
         for (ObjectTile opening : data.Openings) {
             Element objectElement = doc.createElement("object");
@@ -277,6 +278,7 @@ public class XmlCreator {
             floorElement.appendChild(objectElement);
         }
     }
+    **/
 
     private static void setPosition(Element objectElement, ObjectTile opening) {
         objectElement.setAttribute("x", Integer.toString(opening.x));

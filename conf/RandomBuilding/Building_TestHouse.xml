@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    [AI] Пример шаблона здания.
+
+    Порядок секций = порядок загрузки, менять нельзя:
+      1) BuildingParameters - параметры здания (атрибуты элемента <building> в .tbx)
+      2) BuildingElements   - коллекции/элементы/группы уровня здания
+      3) Rooms              - список комнат и их координат
+
+    Правило нумерации num для #define:
+      RandomCollection внутри ЭТОГО файла нумеруются подряд 1..K в порядке
+      появления (сначала BuildingParameters, затем BuildingElements).
+      Linker вычисляет глобальный индекс как base + num - 1, где base
+      фиксируется один раз на весь файл.
+
+    Координаты x/y комнаты — левый верхний угол в клетках здания.
+    Можно задавать диапазоном в формате parseRanges, например x="1-3;7".
+-->
+<Building name="TestHouse" sizeX="15" sizeY="15">
+
+    <BuildingParameters>
+
+        <NonrandomElement num="1">
+            <tile_entry category="exterior_walls">
+                <tile enum="West" tile="walls_exterior_house_01_000"/>
+                <tile enum="North" tile="walls_exterior_house_01_001"/>
+                <tile enum="NorthWest" tile="walls_exterior_house_01_002"/>
+                <tile enum="SouthEast" tile="walls_exterior_house_01_003"/>
+                <tile enum="WestWindow" tile="walls_exterior_house_01_008"/>
+                <tile enum="NorthWindow" tile="walls_exterior_house_01_009"/>
+                <tile enum="WestDoor" tile="walls_exterior_house_01_010"/>
+                <tile enum="NorthDoor" tile="walls_exterior_house_01_011"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="ExteriorWall"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="2">
+            <tile_entry category="doors">
+                <tile enum="West" tile="fixtures_doors_01_000"/>
+                <tile enum="North" tile="fixtures_doors_01_001"/>
+                <tile enum="WestOpen" tile="fixtures_doors_01_002"/>
+                <tile enum="NorthOpen" tile="fixtures_doors_01_003"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="Door"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="3">
+            <tile_entry category="door_frames">
+                <tile enum="West" tile="fixtures_doors_frames_01_004"/>
+                <tile enum="North" tile="fixtures_doors_frames_01_005"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="DoorFrame"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="4">
+            <tile_entry category="grime_wall">
+                <tile enum="West" tile="overlay_grime_wall_01_000"/>
+                <tile enum="North" tile="overlay_grime_wall_01_001"/>
+                <tile enum="NorthWest" tile="overlay_grime_wall_01_002"/>
+                <tile enum="SouthEast" tile="overlay_grime_wall_01_003"/>
+                <tile enum="WestWindow" tile="overlay_grime_wall_01_008"/>
+                <tile enum="NorthWindow" tile="overlay_grime_wall_01_009"/>
+                <tile enum="WestDoor" tile="overlay_grime_wall_01_010"/>
+                <tile enum="NorthDoor" tile="overlay_grime_wall_01_011"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="GrimeWall"/>
+        </NonrandomElement>
+
+    </BuildingParameters>
+
+    <BuildingElements>
+
+        <RandomCollection num="1" name="Household_Trashcontainers">
+            <object type="furniture" orient="N" x="9" y="11"/>
+        </RandomCollection>
+
+    </BuildingElements>
+
+    <Rooms>
+        <Room name="Kitchen_7_4" x="1" y="1"/>
+        <Room name="Kitchen_7_4" x="1" y="5"/>
+    </Rooms>
+
+</Building>
