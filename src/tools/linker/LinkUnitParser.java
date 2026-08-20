@@ -3,13 +3,12 @@ package tools.linker;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LinkUnitParser {
-    public static void parseLinkUnits(String filename, List<LinkUnit> units, int offset) {
+    public static void parseLinkUnits(String filename, Map<String, LinkUnit> units, int offset) {
         Pattern pattern = Pattern.compile(
             "#define\\s+(\\w+)\\s*=\\s*(\\w+)\\.num\\((\\d+)\\);"
         );
@@ -24,7 +23,7 @@ public class LinkUnitParser {
                     unit.type = matcher.group(2);      // RandomCollection
                     unit.reference = Integer.parseInt(matcher.group(3)) + offset; // number
                     //unit.reference--;
-                    units.add(unit);
+                    units.putIfAbsent(unit.Name,unit);
                 }
             }
         } catch (IOException e) {

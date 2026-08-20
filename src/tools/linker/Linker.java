@@ -1,19 +1,16 @@
 package tools.linker;
 
 
-import java.util.ArrayList;
-import java.util.List;
 
-import randRoomGen.Collection;
-import randRoomGen.RandomCollection;
-import randRoomGen.Tileset;
+import java.util.HashMap;
+import java.util.Map;
 
 import static tools.linker.LinkUnitParser.parseLinkUnits;
 
 public class Linker {
 
-	private static List<LinkUnit> linkedRandCollection = new ArrayList<>();
-	public static int offset=0;
+	private Map<String, LinkUnit> linkedRandCollection = new HashMap<>();
+	public int offset=0;
 	
 	public Linker(){
 
@@ -31,20 +28,12 @@ public class Linker {
 		return variableUnit.reference;
 	}
 	
-	private static LinkUnit findLastByName(String targetName) {
+	private LinkUnit findLastByName(String targetName) {
 	        if (linkedRandCollection == null || targetName == null) {
 	            return null;
 	        }
 	        
-	        // Проходим список с конца к началу для поиска последнего элемента
-	        for (int i = linkedRandCollection.size() - 1; i >= 0; i--) {
-	            LinkUnit unit = linkedRandCollection.get(i);
-	            if (targetName.equals(unit.Name)) {
-	                return unit;
-	            }
-	        }
-	        
-	        return null;
+	        return linkedRandCollection.get(targetName);
 	    }
 
 }
