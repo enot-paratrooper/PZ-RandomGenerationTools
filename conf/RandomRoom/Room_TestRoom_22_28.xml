@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="22" sizeY="28" name="TestRoom">
+#define varCounters = RandomCollection.num(22);
+#define varChairs = RandomCollection.num(23);
+<tiles>
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</tiles>
+
+<!-- ============ ПАРАМЕТРЫ КОМНАТЫ (случайные наборы) ============ -->
+<RandomCollection num="1" name="Test_Walls_Interior">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Test_Floors_Interior">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Test_WallTrim">
+<object type="RoomParameter" parameter="InteriorWallTrim"/>
+</RandomCollection>
+<RandomCollection num="4" name="Test_GrimeFloor">
+<object type="RoomParameter" parameter="GrimeFloor"/>
+</RandomCollection>
+
+<!-- ================================================================ -->
+<!-- ЗОНА 1 (y=0..6): корректность размещения                         -->
+<!-- каждый объект коллекции выставлен во всех своих ориентациях      -->
+<!-- ================================================================ -->
+
+<!-- 8 направлений + corners, ряд y=0, x=0..7 -->
+<RandomCollection num="5" name="Test_Counters_8Dir">
+<object type="furniture" orient="W"  x="0" y="0"/>
+<object type="furniture" orient="N"  x="1" y="0"/>
+<object type="furniture" orient="E"  x="2" y="0"/>
+<object type="furniture" orient="S"  x="3" y="0"/>
+<object type="furniture" orient="SW" x="4" y="0"/>
+<object type="furniture" orient="NW" x="5" y="0"/>
+<object type="furniture" orient="NE" x="6" y="0"/>
+<object type="furniture" orient="SE" x="7" y="0"/>
+</RandomCollection>
+
+<!-- 4 направления, ряд y=0, x=9..12 -->
+<RandomCollection num="6" name="Test_Chairs_4Dir">
+<object type="furniture" orient="W" x="9"  y="0"/>
+<object type="furniture" orient="N" x="10" y="0"/>
+<object type="furniture" orient="E" x="11" y="0"/>
+<object type="furniture" orient="S" x="12" y="0"/>
+</RandomCollection>
+
+<!-- 2 направления, ряд y=0, x=14..15 -->
+<RandomCollection num="7" name="Test_Trash_2Dir">
+<object type="furniture" orient="W" x="14" y="0"/>
+<object type="furniture" orient="N" x="15" y="0"/>
+</RandomCollection>
+
+<!-- 1 направление, ряд y=0, x=17 -->
+<RandomCollection num="8" name="Test_Lamps_1Dir">
+<object type="furniture" orient="W" x="17" y="0"/>
+</RandomCollection>
+
+<!-- 4 направления (второй набор), ряд y=2, x=0..3 -->
+<RandomCollection num="9" name="Test_Refrigerator_4Dir">
+<object type="furniture" orient="W" x="0" y="2"/>
+<object type="furniture" orient="N" x="1" y="2"/>
+<object type="furniture" orient="E" x="2" y="2"/>
+<object type="furniture" orient="S" x="3" y="2"/>
+</RandomCollection>
+
+<!-- 4 направления 1x1, ряд y=2, x=5..8 -->
+<RandomCollection num="10" name="Test_Storage_1x1_4Dir">
+<object type="furniture" orient="W" x="5" y="2"/>
+<object type="furniture" orient="N" x="6" y="2"/>
+<object type="furniture" orient="E" x="7" y="2"/>
+<object type="furniture" orient="S" x="8" y="2"/>
+</RandomCollection>
+
+<!-- многоклеточная мебель 2x1, 2 ориентации (hasXsize) -->
+<!-- W занимает (11,2)+(11,3), N занимает (14,2)+(15,2) -->
+<RandomCollection num="11" name="Test_Tables_2x1_2Dir">
+<object type="furniture" orient="W" x="11" y="2"/>
+<object type="furniture" orient="N" x="14" y="2"/>
+</RandomCollection>
+
+<!-- многоклеточная мебель 2x1, 4 ориентации (hasXsize), ряд y=5..6 -->
+<RandomCollection num="12" name="Test_Storage_2x1_4Dir">
+<object type="furniture" orient="W" x="0"  y="5"/>
+<object type="furniture" orient="N" x="3"  y="5"/>
+<object type="furniture" orient="E" x="7"  y="5"/>
+<object type="furniture" orient="S" x="10" y="5"/>
+</RandomCollection>
+
+<!-- ================================================================ -->
+<!-- ЗОНА 2 (y=8..11): случайная позиция                              -->
+<!-- координаты заданы диапазонами / перечислениями                   -->
+<!-- ================================================================ -->
+
+<!-- диапазон по X, фиксированный Y -->
+<RandomCollection num="13" name="Test_Chairs_4Dir">
+<object type="furniture" orient="W" x="0-5"   y="8"/>
+<object type="furniture" orient="N" x="7-12"  y="8"/>
+<object type="furniture" orient="E" x="14-19" y="8"/>
+<object type="furniture" orient="S" x="0-5"   y="10"/>
+</RandomCollection>
+
+<!-- перечисление по X + диапазон по Y -->
+<RandomCollection num="14" name="Test_Lamps_1Dir">
+<object type="furniture" orient="W" x="7;9" y="10-11"/>
+<object type="furniture" orient="W" x="11;13" y="10-11"/>
+</RandomCollection>
+
+<!-- два несмежных диапазона по X -->
+<RandomCollection num="15" name="Test_Trash_2Dir">
+<object type="furniture" orient="W" x="16-18" y="10-11"/>
+<object type="furniture" orient="N" x="20-21" y="10;11"/>
+</RandomCollection>
+
+<!-- ================================================================ -->
+<!-- ЗОНА 3 (y=13): случайное размещение (void)                       -->
+<!-- void = вероятность НЕ разместить коллекцию, %                    -->
+<!-- решение принимается по ПЕРВОМУ объекту коллекции                 -->
+<!-- ================================================================ -->
+
+<RandomCollection num="16" name="Test_Refrigerator_4Dir">
+<object type="furniture" orient="W" x="0" y="13" void="50"/>
+<object type="furniture" orient="N" x="1" y="13"/>
+</RandomCollection>
+
+<RandomCollection num="17" name="Test_Chairs_4Dir">
+<object type="furniture" orient="W" x="3" y="13" void="90"/>
+<object type="furniture" orient="N" x="4" y="13"/>
+</RandomCollection>
+
+<RandomCollection num="18" name="Test_Lamps_1Dir">
+<object type="furniture" orient="W" x="6" y="13" void="10"/>
+<object type="furniture" orient="W" x="7" y="13"/>
+</RandomCollection>
+
+<!-- дробный процент с запятой -->
+<RandomCollection num="19" name="Test_Counters_8Dir">
+<object type="furniture" orient="W" x="9"  y="13" void="50,5"/>
+<object type="furniture" orient="N" x="10" y="13"/>
+</RandomCollection>
+
+<!-- контроль: void="0" -> размещается всегда -->
+<RandomCollection num="20" name="Test_Storage_1x1_4Dir">
+<object type="furniture" orient="W" x="12" y="13" void="0"/>
+<object type="furniture" orient="N" x="13" y="13"/>
+</RandomCollection>
+
+<!-- контроль: void="100" -> не размещается никогда -->
+<RandomCollection num="21" name="Test_Trash_2Dir">
+<object type="furniture" orient="W" x="15" y="13" void="100"/>
+<object type="furniture" orient="N" x="16" y="13"/>
+</RandomCollection>
+
+<!-- ================================================================ -->
+<!-- ЗОНА 4 (y=16..21): проверка ссылок                               -->
+<!-- ================================================================ -->
+
+<!-- источник ссылки без объектов (GlobalParameter):                  -->
+<!-- набор тайлов выбирается, но сама коллекция ничего не размещает   -->
+<RandomCollection num="22" name="Test_Counters_8Dir"/>
+
+<!-- источник ссылки с объектами: тумбы ряд y=16, x=0..3 -->
+<RandomCollection num="23" name="Test_Chairs_4Dir">
+<object type="furniture" orient="W" x="0" y="16"/>
+<object type="furniture" orient="N" x="1" y="16"/>
+<object type="furniture" orient="E" x="2" y="16"/>
+<object type="furniture" orient="S" x="3" y="16"/>
+</RandomCollection>
+
+<!-- ссылка на пустую коллекцию №22: должен быть тот же набор тайлов -->
+<NonrandomElement num="1" globalvariable="varCounters">
+<object type="furniture" orient="W"  x="0" y="18"/>
+<object type="furniture" orient="N"  x="1" y="18"/>
+<object type="furniture" orient="E"  x="2" y="18"/>
+<object type="furniture" orient="S"  x="3" y="18"/>
+<object type="furniture" orient="SW" x="4" y="18"/>
+<object type="furniture" orient="NW" x="5" y="18"/>
+<object type="furniture" orient="NE" x="6" y="18"/>
+<object type="furniture" orient="SE" x="7" y="18"/>
+</NonrandomElement>
+
+<!-- ссылка на коллекцию №23: тайлы должны совпасть с рядом y=16 -->
+<NonrandomElement num="2" globalvariable="varChairs">
+<object type="furniture" orient="W" x="5" y="16"/>
+<object type="furniture" orient="N" x="6" y="16"/>
+<object type="furniture" orient="E" x="7" y="16"/>
+<object type="furniture" orient="S" x="8" y="16"/>
+</NonrandomElement>
+
+<!-- ================================================================ -->
+<!-- ЗОНА 5 (y=23..25): неслучайные объекты                           -->
+<!-- ================================================================ -->
+
+<!-- жёстко заданный набор мебели на 4 стороны -->
+<NonrandomElement num="3">
+<furniture>
+  <entry orient="W">
+   <tile x="0" y="0" name="furniture_seating_indoor_01_040"/>
+  </entry>
+  <entry orient="N">
+   <tile x="0" y="0" name="furniture_seating_indoor_01_041"/>
+  </entry>
+  <entry orient="E">
+   <tile x="0" y="0" name="furniture_seating_indoor_01_042"/>
+  </entry>
+  <entry orient="S">
+   <tile x="0" y="0" name="furniture_seating_indoor_01_043"/>
+  </entry>
+</furniture>
+<object type="furniture" orient="W" x="0" y="23"/>
+<object type="furniture" orient="N" x="1" y="23"/>
+<object type="furniture" orient="E" x="2" y="23"/>
+<object type="furniture" orient="S" x="3" y="23"/>
+</NonrandomElement>
+
+<!-- неслучайный набор + случайная позиция + void -->
+<NonrandomElement num="4">
+<furniture>
+  <entry orient="W">
+   <tile x="0" y="0" name="trashcontainers_01_024"/>
+  </entry>
+  <entry orient="N">
+   <tile x="0" y="0" name="trashcontainers_01_025"/>
+  </entry>
+</furniture>
+<object type="furniture" orient="W" x="5-8" y="23" void="40"/>
+<object type="furniture" orient="N" x="5-8" y="23"/>
+</NonrandomElement>
+
+<!-- неслучайный параметр комнаты: GrimeWall -->
+<NonrandomElement num="5">
+<tile_entry category="grime_wall">
+  <tile enum="West" tile="overlay_grime_wall_01_016"/>
+  <tile enum="North" tile="overlay_grime_wall_01_017"/>
+  <tile enum="NorthWest" tile="overlay_grime_wall_01_018"/>
+  <tile enum="SouthEast" tile="overlay_grime_wall_01_019"/>
+  <tile enum="WestWindow" tile="overlay_grime_wall_01_024"/>
+  <tile enum="NorthWindow" tile="overlay_grime_wall_01_025"/>
+  <tile enum="WestDoor" tile="overlay_grime_wall_01_026"/>
+  <tile enum="NorthDoor" tile="overlay_grime_wall_01_027"/>
+  <tile enum="WestTrim" tile="overlay_grime_wall_01_040"/>
+  <tile enum="NorthTrim" tile="overlay_grime_wall_01_041"/>
+  <tile enum="NorthWestTrim" tile="overlay_grime_wall_01_042"/>
+  <tile enum="SouthEastTrim" tile="overlay_grime_wall_01_043"/>
+  <tile enum="WestDoubleLeft" tile="overlay_grime_wall_01_044"/>
+  <tile enum="WestDoubleRight" tile="overlay_grime_wall_01_045"/>
+  <tile enum="NorthDoubleLeft" tile="overlay_grime_wall_01_046"/>
+  <tile enum="NorthDoubleRight" tile="overlay_grime_wall_01_047"/>
+ </tile_entry>
+ <object type="RoomParameter" parameter="GrimeWall"/>
+</NonrandomElement>
+
+<!-- ================================================================ -->
+<!-- Группа: смещение + ссылка внутри группы + void внутри группы     -->
+<!-- ================================================================ -->
+<RandomGroup num="1" name="Test_Outer_Link_Corner">
+<object type="group" x="14-16" y="16"/>
+<object type="group" x="14-16" y="20"  void="50"/>
+
+</RandomGroup>
+<RandomGroup num="2" name="Test_Inner_Link_Corner">
+<object type="group" x="14-16" y="24"/>
+</RandomGroup>
+</room>

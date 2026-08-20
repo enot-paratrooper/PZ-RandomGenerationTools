@@ -28,12 +28,20 @@ public class Room {
 	private int x;
 	private int y;
 	private int floor;
+	/** AI: индекс комнаты в data.randomRooms. Сквозной номер в .tbx = roomIndex+1. */
+	private int roomIndex = 0;
 	private int [][] roomCells;
 	private String roomCellsString;
 	
 	private List<Integer> Color = new ArrayList<Integer>();
-	private int TileSetStart=0;
-	private int TileSetEnd=0;
+	// AI: TileSetStart/TileSetEnd заменены на две пары границ.
+	// Коллекции комнаты идут подряд внутри RandomCollections и внутри
+	// NonrandomElements, но в объединённом Collections они не соседи,
+	// поэтому одного диапазона на многокомнатное здание не хватало.
+	private int randStart=0;
+	private int randEnd=0;
+	private int nonRandStart=0;
+	private int nonRandEnd=0;
 	private int InteriorWall;
 	private int InteriorWallTrim;
 	private int Floor;
@@ -54,7 +62,19 @@ public class Room {
 		this.data = data;
 	}
 	
+	/** AI: совместимость со старыми тестами (Generator). */
+	public void loadRoom(String roomName)
+	{
+		loadRoom(roomName,0,0,0,0);
+	}
+	
 	public void loadRoom(String roomName, int x, int y, int z)
+	{
+		loadRoom(roomName,x,y,z,0);
+	}
+	
+	/** AI: добавлен roomIndex - нужен проёмам комнаты для поиска её параметров. */
+	public void loadRoom(String roomName, int x, int y, int z, int roomIndex)
 	{
 		this.Name ="";
 		this.SizeX=0;
@@ -62,8 +82,9 @@ public class Room {
 		this.x=x;
 		this.y=y;
 		this.floor=z;
+		this.roomIndex=roomIndex;
 		 try {
-		String fileName = "..\\RandomRoomGenerator\\conf\\RandomRoom\\" + roomName + ".xml";
+		String fileName = "..\\RandomRoomGenerator\\conf\\RandomRoom\\Room_" + roomName + ".xml";
         
         // Пытаемся загрузить файл из ресурсов
         InputStream inputStream = getClass().getResourceAsStream(fileName);
@@ -101,21 +122,37 @@ public class Room {
         Element roomCellsE= (Element) roomCellsNodes.item(0);
         roomCellsString = roomCellsE.getTextContent().trim();
         roomCells = parseGrid(roomCellsString);
-        TileSetStart = data.Collections.size();
+        // AI: начало диапазонов коллекций комнаты
+        randStart = data.RandomCollections.size();
+        nonRandStart = data.NonrandomElements.size();
         // Загрузка RandomCollection
-        loadRandColl(data,roomElement,this.x,this.y);
+        loadRandColl(data,roomElement,this.x,this.y,this.floor);
         // Загрузка NonrandomElements
-        loadNonRandE(data,roomElement,this.x,this.y);
+        loadNonRandE(data,roomElement,this.x,this.y,this.floor);
         // Загрузка дверей, окон и лестниц
-        loadOpenings(data,roomElement,this.x,this.y);
+        loadOpenings(data,roomElement,this.x,this.y,this.floor,this.roomIndex);
         // Загрузка RandomGroups
-        loadRandGroup(data,roomElement,RandomGroups,this.x,this.y);
-		TileSetEnd = data.RandomCollections.size() + data.NonrandomElements.size();
+        loadRandGroup(data,roomElement,RandomGroups,this.x,this.y,this.floor,this.roomIndex);
+        // AI: конец диапазонов коллекций комнаты (включая коллекции групп)
+		randEnd = data.RandomCollections.size();
+		nonRandEnd = data.NonrandomElements.size();
+		inputStream.close();
 		}catch (Exception e) {
 	            System.err.println("Ошибка загрузки комнаты '" + roomName + "': " + e.getMessage());
 	            e.printStackTrace();
 	        }
 	}	
+	
+	/**
+	 * Разбор объектов type="RoomParameter".
+	 *
+	 * AI: номер набора тайлов берётся из relativeNumberLocation, то есть из
+	 * сквозной нумерации tile_entry по всему зданию. Локальный счётчик j,
+	 * начинавшийся с 1 в каждой комнате, во втором и следующих помещениях
+	 * указывал бы на чужие наборы.
+	 *
+	 * Вызывать строго после CommonData.DetermineListType().
+	 */
 	public void InitRoomparameters()
 	{
 		try 
@@ -135,38 +172,51 @@ public class Room {
 			Curtains=0;
 			Shutters=0;
 			Stairs=0;
-			int j =1;
-			for(int i=TileSetStart;i<TileSetEnd;i++) {
-				Collection coll =data.Collections.get(i);
-				if(coll.GetTypeOfObject().equals("RoomParameter"))
-				{
-					String param=coll.GetParameter();
-					switch(param)
-					{
-					case "InteriorWall": InteriorWall =j;break;
-					case "InteriorWallTrim": InteriorWallTrim =j;break;
-					case "Floor": Floor =j;break;
-					case "GrimeFloor": GrimeFloor =j;break;
-					case "GrimeWall": GrimeWall =j;break;
-					case "Door": if(Door==0) {Door=j;}; break;
-					case "DoorFrame": if(DoorFrame==0) {DoorFrame=j;}break;
-					case "Window": if(Window==0) { Window=j;}break;
-					case "Curtains": if(Curtains==0) {Curtains=j;}break;
-					case "Shutters": if(Shutters==0) {Shutters=j;}break;
-					case "Stairs": if(Stairs==0) { Stairs=j;}break;
-					default:
-						throw new IllegalArgumentException("Неизвестный параметр комнаты: " + param);
-					}
-					j++;
-				}
+			for(int i=randStart;i<randEnd;i++) {
+				applyRoomParameter(data.RandomCollections.get(i));
 			}
-			
+			for(int i=nonRandStart;i<nonRandEnd;i++) {
+				applyRoomParameter(data.NonrandomElements.get(i));
+			}
 		} catch(Exception e) 
 		{
 			 System.err.println("Ошибка загрузки параметров" + e.getMessage());
 	            e.printStackTrace();
 		}
-}	
+	}
+	
+	/** AI: вынесено из InitRoomparameters, чтобы обойти оба диапазона одним кодом. */
+	private void applyRoomParameter(Collection coll)
+	{
+		if(!"RoomParameter".equals(coll.GetTypeOfObject()))
+		{
+			return;
+		}
+		int j = coll.relativeNumberLocation;
+		if(j < 1)
+		{
+			throw new IllegalStateException(
+				"Не определён номер набора тайлов. InitRoomparameters вызван до DetermineListType");
+		}
+		String param=coll.GetParameter();
+		switch(param)
+		{
+		case "InteriorWall": InteriorWall =j;break;
+		case "InteriorWallTrim": InteriorWallTrim =j;break;
+		case "Floor": Floor =j;break;
+		case "GrimeFloor": GrimeFloor =j;break;
+		case "GrimeWall": GrimeWall =j;break;
+		case "Door": if(Door==0) {Door=j;}; break;
+		case "DoorFrame": if(DoorFrame==0) {DoorFrame=j;}break;
+		case "Window": if(Window==0) { Window=j;}break;
+		case "Curtains": if(Curtains==0) {Curtains=j;}break;
+		case "Shutters": if(Shutters==0) {Shutters=j;}break;
+		case "Stairs": if(Stairs==0) { Stairs=j;}break;
+		default:
+			throw new IllegalArgumentException("Неизвестный параметр комнаты: " + param);
+		}
+	}
+	
 	public ArrayList<String> getTypesOfTiles()
 	{
 		ArrayList<String> TypesOfTiles = new ArrayList<String>();
@@ -232,6 +282,28 @@ public class Room {
 	public int getSizeY()
 	{
 		return SizeY;
+	}
+	/** AI: координаты комнаты внутри здания. */
+	public int getX()
+	{
+		return x;
+	}
+	public int getY()
+	{
+		return y;
+	}
+	/**
+	 * AI: этаж комнаты.
+	 * Назван getLevel, а не getFloor: getFloor уже занят номером набора тайлов пола.
+	 */
+	public int getLevel()
+	{
+		return floor;
+	}
+	/** AI: сквозной номер комнаты в .tbx. */
+	public int getRoomNumber()
+	{
+		return roomIndex+1;
 	}
 	public int[][] getRoomCells()
 	{

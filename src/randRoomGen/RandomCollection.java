@@ -20,6 +20,7 @@ public class RandomCollection extends Collection
 
 	private List<Tileset> Tilesets =  new ArrayList<>();
 	private int dirCount;
+	private int floor = 0;
 	private int furnitureTypeCount;
 	private List<ObjectTile> tilesGenerated= new ArrayList<>();
 	public int numberOfCollection;
@@ -219,7 +220,7 @@ public class RandomCollection extends Collection
 		 LinkedList<UsedFurniture> UsedFurniture = new LinkedList<>();
 		 for(ObjectTile Tile:tilesGenerated)
 		 {
-			 UsedFurniture.add(new UsedFurniture(Tileset,Tile.direction,Tile.x,Tile.y));
+			 UsedFurniture.add(new UsedFurniture(Tileset,Tile.direction,Tile.x,Tile.y,Tile.floor));
 		 }
 		 return UsedFurniture;
 	 }
@@ -240,5 +241,18 @@ public class RandomCollection extends Collection
 		 for(ObjectTile tile:tilesGenerated) {
 			 tile.y+=y;
 		 }
+	 }
+	 @Override
+	 public void setFloor(int floor) {
+		 this.floor = floor;
+		 for(ObjectTile tile:tilesGenerated) {
+			 if(!tile.floorExplicit) {
+				 tile.floor = floor;
+			 }
+		 }
+	 }
+	 @Override
+	 public int getFloor() {
+		 return this.floor;
 	 }
 }

@@ -49,6 +49,12 @@ public class CommonData {
     	}
     	return UsedFurnitureTile;
     }
+    /**
+     * Список размещённой мебели.
+     * Метод не идемпотентен: он дописывает UsedFurnitureTiles, поэтому вызывать
+     * его на одном CommonData нужно ровно один раз за генерацию.
+     * Этаж каждого объекта лежит в UsedFurniture.floor.
+     */
     public LinkedList<UsedFurniture> getUsedFurniture()
     {
     	int j=0;
@@ -120,12 +126,19 @@ public class CommonData {
 		Collections.addAll(RandomCollections);
 		Collections.addAll(NonrandomElements);
 	}
+	/**
+	 * Сквозная нумерация наборов тайлов и наборов мебели по всему зданию.
+	 *
+	 * AI: BuildingParameter обрабатывается так же, как RoomParameter.
+	 * Без этого внешние стены и другие параметры здания не попадали
+	 * в usedTile и для них не писался tile_entry.
+	 */
 	public void DetermineListType() {
 		int iterTileSet = 1;
 		int iterFurnitureTileSet = 0;
 		for(Collection coll:Collections) {
 			String typeOfObject = coll.GetTypeOfObject();
-            if ("RoomParameter".equals(typeOfObject)) {
+            if ("RoomParameter".equals(typeOfObject) || "BuildingParameter".equals(typeOfObject)) {
             	coll.relativeNumberLocation = iterTileSet;
             	usedTile.add(coll);
             	iterTileSet++;

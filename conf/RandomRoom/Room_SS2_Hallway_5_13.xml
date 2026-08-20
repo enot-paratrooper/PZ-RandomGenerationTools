@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="5" sizeY="13" name="Hallway">
+<tiles>
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,1,1,1,
+1,1,1,1,1,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0,
+1,1,0,0,0
+</tiles>
+<RandomCollection num="1" name="Walls_Interior_House_01; Walls_Interior_House_02; Walls_Interior_House_03">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Floors_Interior_Carpet">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Rugs_2x3">
+<object type="furniture" orient="E" x="0" y="10"/>
+</RandomCollection>
+<RandomCollection num="4" name="Household_Tables_1x1_High_01">
+<object type="furniture" orient="E" x="1" y="12"/>
+</RandomCollection>
+<RandomCollection num="5" name="Household_Wall_Decoration_Small">
+<object type="furniture" orient="W" x="0" y="7"/>
+</RandomCollection>
+</room>

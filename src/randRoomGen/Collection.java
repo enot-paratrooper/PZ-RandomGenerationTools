@@ -50,4 +50,14 @@ public abstract class Collection {
     public String getLayer(){
 		return null;
 	}
+    /**
+     * AI: этаж коллекции.
+     * Проставляется при загрузке и определяет, в какой блок <floor>
+     * попадут объекты коллекции.
+     */
+    public void setFloor(int floor){
+    }
+    public int getFloor(){
+		return 0;
+	}
 }

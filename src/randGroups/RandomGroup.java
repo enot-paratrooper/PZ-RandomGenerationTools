@@ -21,6 +21,9 @@ public class RandomGroup {
 	String Name;
 	private int x;
 	private int y;
+	/** AI: этаж и комната-владелец, унаследованные от комнаты. */
+	private int floor;
+	private int roomIndex;
 	private List<Integer> rangeX;
 	private List<Integer> rangeY;
 	private CommonData data;	
@@ -31,7 +34,15 @@ public class RandomGroup {
 	
 	public void loadRandomGroup(String groupName, String rangeXrelative , String rangeYrelative, int xGlobal, int yGlobal)
 	{
+		loadRandomGroup(groupName, rangeXrelative, rangeYrelative, xGlobal, yGlobal, 0, -1);
+	}
+	
+	/** AI: добавлены floor и roomIndex. */
+	public void loadRandomGroup(String groupName, String rangeXrelative , String rangeYrelative, int xGlobal, int yGlobal, int floor, int roomIndex)
+	{
 		Name ="";
+		this.floor = floor;
+		this.roomIndex = roomIndex;
 		this.rangeX = parseRanges(rangeXrelative);
 		this.rangeY = parseRanges(rangeYrelative);
 		initializeCoord(xGlobal,yGlobal);
@@ -54,11 +65,11 @@ public class RandomGroup {
         Element groupElement = document.getDocumentElement();
         Name = groupElement.getAttribute("name");
         // Загрузка RandomCollection
-        loadRandColl(data,groupElement,this.x,this.y);
+        loadRandColl(data,groupElement,this.x,this.y,this.floor);
         // Загрузка NonrandomElements
-        loadNonRandE(data,groupElement,this.x,this.y);
+        loadNonRandE(data,groupElement,this.x,this.y,this.floor);
         // Загрузка дверей, окон и лестниц группы
-        loadOpenings(data,groupElement,this.x,this.y);   
+        loadOpenings(data,groupElement,this.x,this.y,this.floor,this.roomIndex);   
 		}catch (Exception e) {
 	            System.err.println("Ошибка загрузки группы '" + groupName + "': " + e.getMessage());
 	            e.printStackTrace();

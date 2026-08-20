@@ -23,6 +23,15 @@ public abstract class ObjectTile implements InitializeTile {
 	public String layer = null;
 	/** false = объект выпал по атрибуту void и размещаться не должен. */
 	public boolean placeble = true;
+	/** AI: этаж здания, на который попадёт объект. */
+	public int floor = 0;
+	/** AI: true = этаж задан атрибутом floor и не должен перекрываться этажом родителя. */
+	public boolean floorExplicit = false;
+	/**
+	 * AI: индекс комнаты-владельца в CommonData.randomRooms.
+	 * -1 = объект уровня здания, наборы тайлов по умолчанию берутся из параметров здания.
+	 */
+	public int roomIndex = -1;
 
 	private static Random random = new Random();
 
@@ -33,6 +42,14 @@ public abstract class ObjectTile implements InitializeTile {
 		this.rangeY = parseRanges(element.getAttribute("y"));
 		if (element.hasAttribute("layer")) {
 			this.layer = element.getAttribute("layer");
+		}
+		// AI: этаж отдельного объекта
+		if (element.hasAttribute("floor")) {
+			String floorValue = element.getAttribute("floor").trim();
+			if (!floorValue.isEmpty()) {
+				this.floor = Integer.parseInt(floorValue);
+				this.floorExplicit = true;
+			}
 		}
 		if (element.hasAttribute("void")) {
 			this.placeble = chance(element.getAttribute("void"));

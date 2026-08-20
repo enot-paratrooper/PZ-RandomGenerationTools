@@ -19,6 +19,7 @@ import java.util.List;
 public class NonrandomElement extends Collection{
 	
 	private Integer LinkNumber=-1;
+	private int floor = 0;
 	private Tileset tileset = new Tileset();
 	private List<ObjectTile> tilesGenerated = new ArrayList<ObjectTile>();		
 	
@@ -196,7 +197,7 @@ public class NonrandomElement extends Collection{
 	 public LinkedList<UsedFurniture> getUsedFurniture(int Tileset){
 		LinkedList<UsedFurniture> UsedFurniture = new LinkedList<UsedFurniture>();
 		for(ObjectTile object:tilesGenerated) {
-			UsedFurniture.add(new UsedFurniture(Tileset,object.direction,object.x,object.y));
+			UsedFurniture.add(new UsedFurniture(Tileset,object.direction,object.x,object.y,object.floor));
 		}
 		return UsedFurniture;
 		 
@@ -215,6 +216,19 @@ public class NonrandomElement extends Collection{
 		 for(ObjectTile tile:tilesGenerated) {
 			 tile.y+=y;
 		 }
+	 }
+	 @Override
+	 public void setFloor(int floor) {
+		 this.floor = floor;
+		 for(ObjectTile tile:tilesGenerated) {
+			 if(!tile.floorExplicit) {
+				 tile.floor = floor;
+			 }
+		 }
+	 }
+	 @Override
+	 public int getFloor() {
+		 return this.floor;
 	 }
 	 public int getLinkNumber() {
 		 return this.LinkNumber;

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    [AI] Пример шаблона МНОГОЭТАЖНОГО здания (файл добавлен AI).
+
+    Порядок секций = порядок загрузки, менять нельзя:
+      1) BuildingParameters - параметры здания (атрибуты элемента <building> в .tbx)
+      2) BuildingElements   - коллекции/элементы/группы уровня здания
+      3) Rooms              - список комнат, их координат и ЭТАЖЕЙ
+
+    Правило нумерации num для #define не изменилось:
+      RandomCollection внутри ЭТОГО файла нумеруются подряд 1..K в порядке
+      появления (сначала BuildingParameters, затем BuildingElements).
+
+    НОВОЕ - ЭТАЖИ:
+      * floors="3" у <Building> - объявленное число этажей. Необязательно:
+        без него число этажей считается по факту (максимальный
+        использованный этаж + 1). Здесь задано явно, чтобы третий этаж
+        (пустой, под крышу) точно существовал.
+      * floor="N" у <Room> - этаж комнаты, 0 = первый. Можно диапазоном,
+        как x/y: floor="0-1".
+      * <Floor level="N"> ... </Floor> внутри <Rooms> - обёртка, задающая
+        базовый этаж для всех вложенных комнат. floor у вложенной комнаты
+        считается ОТНОСИТЕЛЬНО level. Обе формы записи можно смешивать.
+      * floor="N" у <RandomCollection>, <NonrandomElement>, <RandomGroup>
+        и у отдельного <object> - относительный этаж внутри владельца.
+        Этаж объекта = этаж комнаты + этаж элемента + этаж объекта.
+
+    Комнаты на разных этажах НЕ конфликтуют между собой, поэтому второй
+    этаж можно класть ровно поверх первого.
+
+    Нумерация комнат сквозная по всему зданию (1..N в порядке объявления),
+    как в .tbx: список <room .../> там общий, а блоков <rooms> столько,
+    сколько этажей.
+-->
+<Building name="TestFloors" sizeX="15" sizeY="15" floors="3">
+
+    <BuildingParameters>
+
+        <NonrandomElement num="1">
+            <tile_entry category="exterior_walls">
+                <tile enum="West" tile="walls_exterior_house_01_000"/>
+                <tile enum="North" tile="walls_exterior_house_01_001"/>
+                <tile enum="NorthWest" tile="walls_exterior_house_01_002"/>
+                <tile enum="SouthEast" tile="walls_exterior_house_01_003"/>
+                <tile enum="WestWindow" tile="walls_exterior_house_01_008"/>
+                <tile enum="NorthWindow" tile="walls_exterior_house_01_009"/>
+                <tile enum="WestDoor" tile="walls_exterior_house_01_010"/>
+                <tile enum="NorthDoor" tile="walls_exterior_house_01_011"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="ExteriorWall"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="2">
+            <tile_entry category="doors">
+                <tile enum="West" tile="fixtures_doors_01_000"/>
+                <tile enum="North" tile="fixtures_doors_01_001"/>
+                <tile enum="WestOpen" tile="fixtures_doors_01_002"/>
+                <tile enum="NorthOpen" tile="fixtures_doors_01_003"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="Door"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="3">
+            <tile_entry category="door_frames">
+                <tile enum="West" tile="fixtures_doors_frames_01_004"/>
+                <tile enum="North" tile="fixtures_doors_frames_01_005"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="DoorFrame"/>
+        </NonrandomElement>
+
+        <NonrandomElement num="4">
+            <tile_entry category="stairs">
+                <tile enum="West1" tile="fixtures_stairs_01_000"/>
+                <tile enum="West2" tile="fixtures_stairs_01_001"/>
+                <tile enum="West3" tile="fixtures_stairs_01_002"/>
+                <tile enum="North1" tile="fixtures_stairs_01_003"/>
+                <tile enum="North2" tile="fixtures_stairs_01_004"/>
+                <tile enum="North3" tile="fixtures_stairs_01_005"/>
+            </tile_entry>
+            <object type="BuildingParameter" parameter="Stairs"/>
+        </NonrandomElement>
+
+    </BuildingParameters>
+
+    <BuildingElements>
+
+        <!-- этаж не указан - значит первый (0), как и раньше -->
+        <RandomCollection num="1" name="Household_Trashcontainers">
+            <object type="furniture" orient="N" x="9" y="11"/>
+        </RandomCollection>
+
+        <!-- элемент уровня здания, поднятый на второй этаж целиком -->
+        <RandomCollection num="2" name="Household_Trashcontainers" floor="1">
+            <object type="furniture" orient="N" x="9" y="11"/>
+        </RandomCollection>
+
+    </BuildingElements>
+
+    <Rooms>
+
+        <!-- запись 1: этаж атрибутом у комнаты -->
+        <Room name="SS2_Kitchen_7_4"     x="1" y="1" floor="0"/>
+        <Room name="SS2_LivingRoom_7_4"  x="1" y="6" floor="0"/>
+        <Room name="SS2_DiningRoom_5_5"  x="9" y="1" floor="0"/>
+
+        <Room name="SS2_Bedroom_5_6"  x="1" y="1" floor="1"/>
+        <Room name="SS2_Bathroom_3_4" x="7" y="1" floor="1"/>
+        <Room name="SS2_Bedroom_5_6"  x="1" y="8" floor="1"/>
+
+    </Rooms>
+
+</Building>

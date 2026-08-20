@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<room sizeX="3" sizeY="4" name="Bathroom">
+#define variableTestOpenings_Door = RandomCollection.num(10);
+#define variableTestOpenings_Frame = RandomCollection.num(11);
+<tiles>
+1,1,1,
+1,1,1,
+1,1,1,
+1,1,1
+</tiles>
+<RandomCollection num="1" name="Walls_Interior_House_01; Walls_Interior_House_02; Walls_Interior_House_03">
+<object type="RoomParameter" parameter="InteriorWall"/>
+</RandomCollection>
+<RandomCollection num="2" name="Floors_Interior_Fixed">
+<object type="RoomParameter" parameter="Floor"/>
+</RandomCollection>
+<RandomCollection num="3" name="Household_Bathroom_Toilet">
+<object type="furniture" orient="N" x="2" y="0"/>
+</RandomCollection>
+<RandomCollection num="4" name="Household_Kitchen_Counters_Down">
+<object type="furniture" orient="W" x="0" y="2"/>
+</RandomCollection>
+<RandomCollection num="5" name="Household_Bathroom_Sink">
+<object type="furniture" orient="W" x="0" y="2"/>
+</RandomCollection>
+<!-- Слой WallFurniture берётся из атрибута layer файла коллекции -->
+<RandomCollection num="6" name="Household_Bathroom_Cabinet">
+<object type="furniture" orient="W" x="0" y="2"/>
+</RandomCollection>
+<RandomCollection num="7" name="Doors_Bathroom">
+<object type="RoomParameter" parameter="Door"/>
+</RandomCollection>
+<RandomCollection num="8" name="Door_Frames">
+<object type="RoomParameter" parameter="DoorFrame"/>
+</RandomCollection>
+<RandomCollection num="9" name="Windows_Interior">
+<object type="RoomParameter" parameter="Window"/>
+</RandomCollection>
+<RandomCollection num="10" name="Doors_Bathroom">
+<object type="RoomParameter" parameter="Door"/>
+</RandomCollection>
+<RandomCollection num="11" name="Door_Frames">
+<object type="RoomParameter" parameter="DoorFrame"/>
+</RandomCollection>
+<!--
+  Ванна 2x2 как нерандомный элемент: в каждом entry несколько tile
+  с собственными x/y. Тайлы West и North частично совпадают - индексы
+  дедуплицируются автоматически.
+-->
+<NonrandomElement num="1">
+<furniture>
+  <entry orient="W">
+   <tile x="0" y="0" name="fixtures_bathroom_01_033"/>
+   <tile x="0" y="1" name="fixtures_bathroom_01_035"/>
+   <tile x="1" y="0" name="fixtures_bathroom_01_034"/>
+   <tile x="1" y="1" name="fixtures_bathroom_01_036"/>
+  </entry>
+  <entry orient="N">
+   <tile x="0" y="0" name="fixtures_bathroom_01_032"/>
+   <tile x="0" y="1" name="fixtures_bathroom_01_035"/>
+   <tile x="1" y="0" name="fixtures_bathroom_01_034"/>
+   <tile x="1" y="1" name="fixtures_bathroom_01_036"/>
+  </entry>
+</furniture>
+<object type="furniture" orient="N" x="0" y="0"/>
+</NonrandomElement>
+<!-- Настенное зеркало: layer задаётся прямо на блоке furniture -->
+<NonrandomElement num="2">
+<furniture layer="WallFurniture">
+  <entry orient="W">
+   <tile x="0" y="0" name="walls_decoration_01_050"/>
+  </entry>
+  <entry orient="N">
+   <tile x="0" y="0" name="walls_decoration_01_051"/>
+  </entry>
+</furniture>
+<object type="furniture" orient="W" x="1" y="0" void="40"/>
+</NonrandomElement>
+<Openings>
+<object type="door" orient="N" x="0" y="4" FrameTile="link.variableTestOpenings_Frame"/>
+<object type="door" orient="N" x="1" y="4" Tile="link.variableTestOpenings_Door"/>
+<object type="window" orient="N" x="2" y="0" CurtainsTile="0" ShuttersTile="0"/>
+</Openings>
+</room>
