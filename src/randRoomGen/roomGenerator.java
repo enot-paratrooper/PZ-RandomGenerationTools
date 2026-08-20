@@ -3,14 +3,14 @@ package randRoomGen;
 import changeToTBX.XmlCreator;
 import containers.CommonData;
 
-
-public class Generator {
+//Только для тестов
+public class roomGenerator {
 	
 	public static void main(String[] args)
 	{		
 		CommonData data = new CommonData();
 		Room room = new Room(data);
-		room.loadRoom("SS2_Bathroom_3_4");		
+		room.loadRoom("TestRoom_22_28",0,0,0);		
 		data.MergeCollections();
 		data.DetermineListType();
 		data.InitTileSets();

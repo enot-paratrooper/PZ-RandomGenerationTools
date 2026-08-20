@@ -12,103 +12,128 @@ import randGroups.RandomGroup;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
 import randRoomGen.ObjectTiles.GlobalParameter;
+import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.ObjectTileFactory;
+import randRoomGen.Room;
+import static tools.RandTools.chance;
 
-/**
- * [AI] ИЗМЕНЁННЫЙ ФАЙЛ.
- *
- * Что изменено (всё помечено метками [AI]):
- *  1. loadRandColl(data, element) и loadRandColl(data, element, x, y) больше не
- *     дублируют друг друга — обе делегируют в общую реализацию. Раньше версия
- *     со смещением НЕ добавляла GlobalParameter при пустом списке object,
- *     из-за чего RandomCollection.GetTypeOfObject() падал с
- *     IndexOutOfBoundsException для коллекций вида
- *     <RandomCollection num="4" name="..."/> внутри групп/зданий.
- *  2. То же самое сделано для loadNonRandE.
- *  3. Добавлен loadRandGroup(..., offsetX, offsetY) — без него группы внутри
- *     комнаты, размещённой в здании, ставились бы в координатах комнаты,
- *     а не в координатах здания.
- */
 public class LoadFunc {
 
 	public static void loadRandColl(CommonData data, Element mainElement) {
-		// [AI] делегирование в общую реализацию с нулевым смещением
 		loadRandColl(data, mainElement, 0, 0);
 	}
-
+	
 	public static void loadRandColl(CommonData data, Element mainElement, int x, int y) {
 		NodeList RandomCollectionNodes = mainElement.getElementsByTagName("RandomCollection");
-		for (int i = 0; i < RandomCollectionNodes.getLength(); i++) {
-			Element RandomCollectionE = (Element) RandomCollectionNodes.item(i);
-			String RandomCollectionName = RandomCollectionE.getAttribute("name");
-			if (RandomCollectionName.isEmpty()) {
-				throw new IllegalArgumentException("Неверное имя коллекции - " + RandomCollectionE.getAttribute("num"));
-			}
-			RandomCollection newRandomCollection = new RandomCollection(data.random);
-			newRandomCollection.numberOfCollection = Integer.parseInt(RandomCollectionE.getAttribute("num"));
-			newRandomCollection.loadRandomCollection(splitString(RandomCollectionName));
-			NodeList ObjectTiles = RandomCollectionE.getElementsByTagName("object");
-			// [AI] перенесено из версии без смещения: коллекция без <object>
-			// является «чистым» источником тайлов для link-переменных
-			if (ObjectTiles.getLength() == 0) {
-				newRandomCollection.AddFurniture(new GlobalParameter());
-			}
-			for (int j = 0; j < ObjectTiles.getLength(); j++) {
-				Element FurnitureE = (Element) ObjectTiles.item(j);
-				int randCollNum = Integer.parseInt(RandomCollectionE.getAttribute("num"));
-				newRandomCollection.AddFurniture(ObjectTileFactory.createReflective(FurnitureE, randCollNum));
-			}
-			newRandomCollection.setOffsetX(x);
-			newRandomCollection.setOffsetY(y);
-			data.RandomCollections.add(newRandomCollection);
-		}
+        for(int i=0;i<RandomCollectionNodes.getLength();i++) {
+        	Element RandomCollectionE = (Element)RandomCollectionNodes.item(i);
+        	String RandomCollectionName = RandomCollectionE.getAttribute("name");
+        	if(RandomCollectionName.isEmpty()) {
+        		throw new IllegalArgumentException("Неверное имя коллекции - " + RandomCollectionE.getAttribute("num"));
+        	}
+        	RandomCollection newRandomCollection = new RandomCollection(data.random);
+        	newRandomCollection.numberOfCollection = Integer.parseInt(RandomCollectionE.getAttribute("num"));
+        	newRandomCollection.loadRandomCollection(splitString(RandomCollectionName));
+        	NodeList ObjectTiles = RandomCollectionE.getElementsByTagName("object");
+        	// Коллекция без объектов нужна только как цель ссылки #define.
+        	// Раньше эта ветка была лишь в комнатной версии, и такая коллекция
+        	// внутри RandomGroup валила GetTypeOfObject().
+        	if(ObjectTiles.getLength()==0) {
+        		newRandomCollection.AddFurniture(new GlobalParameter());
+        	}
+        	for(int j=0;j<ObjectTiles.getLength();j++)
+        	{
+        		Element FurnitureE = (Element)ObjectTiles.item(j);
+        		int randCollNum = Integer.parseInt(RandomCollectionE.getAttribute("num"));
+        		newRandomCollection.AddFurniture(ObjectTileFactory.createReflective(FurnitureE, randCollNum));
+        	}
+        	newRandomCollection.setOffsetX(x);
+        	newRandomCollection.setOffsetY(y);
+        	data.RandomCollections.add(newRandomCollection);
+        }
 	}
-
+	
 	public static void loadNonRandE(CommonData data, Element mainElement) {
-		// [AI] делегирование в общую реализацию с нулевым смещением
 		loadNonRandE(data, mainElement, 0, 0);
 	}
-
+	
 	public static void loadNonRandE(CommonData data, Element mainElement, int x, int y) {
 		NodeList NonrandomElementsNodes = mainElement.getElementsByTagName("NonrandomElement");
-		for (int i = 0; i < NonrandomElementsNodes.getLength(); i++) {
-			Element NonrandomElementE = (Element) NonrandomElementsNodes.item(i);
-			NonrandomElement newNonrandomElement = new NonrandomElement();
-			int num = Integer.parseInt(NonrandomElementE.getAttribute("num"));
-			newNonrandomElement.loadNonrandomElement(NonrandomElementE, num, data.linker);
-			newNonrandomElement.setOffsetX(x);
-			newNonrandomElement.setOffsetY(y);
-			data.NonrandomElements.add(newNonrandomElement);
-		}
+        for(int i=0;i<NonrandomElementsNodes.getLength();i++) {
+        	Element NonrandomElement = (Element)NonrandomElementsNodes.item(i);
+        	NonrandomElement newNonrandomElement = new NonrandomElement();
+        	int num = Integer.parseInt(NonrandomElement.getAttribute("num"));
+        	newNonrandomElement.loadNonrandomElement(NonrandomElement, num, data.linker);
+        	newNonrandomElement.setOffsetX(x);
+        	newNonrandomElement.setOffsetY(y);
+        	data.NonrandomElements.add(newNonrandomElement);
+        }
 	}
-
-	public static void loadRandGroup(CommonData data, Element roomElement, List<RandomGroup> RandomGroups) {
-		// [AI] делегирование в общую реализацию с нулевым смещением
-		loadRandGroup(data, roomElement, RandomGroups, 0, 0);
-	}
-
+	
 	/**
-	 * [AI] НОВАЯ ПЕРЕГРУЗКА.
-	 * offsetX/offsetY — абсолютное смещение владельца группы (комнаты в здании
-	 * либо самого здания). Координаты внутри <object x=".." y=".."/> группы
-	 * по-прежнему могут быть диапазонами, смещение прибавляется уже после
-	 * розыгрыша случайной позиции.
+	 * Загрузка дверей, окон и лестниц из блока Openings.
+	 * Набор тайлов у них общий на комнату (параметры Door/DoorFrame/Window/
+	 * Curtains/Shutters/Stairs), поэтому коллекция каждому объекту не нужна.
 	 */
-	public static void loadRandGroup(CommonData data, Element roomElement, List<RandomGroup> RandomGroups,
-			int offsetX, int offsetY) {
+	public static void loadOpenings(CommonData data, Element mainElement) {
+		loadOpenings(data, mainElement, 0, 0);
+	}
+	
+	public static void loadOpenings(CommonData data, Element mainElement, int x, int y) {
+		NodeList openingsNodes = mainElement.getElementsByTagName("Openings");
+        for(int i=0;i<openingsNodes.getLength();i++) {
+        	Element openingsElement = (Element)openingsNodes.item(i);
+        	NodeList objectNodes = openingsElement.getElementsByTagName("object");
+        	for(int j=0;j<objectNodes.getLength();j++) {
+        		Element objectElement = (Element)objectNodes.item(j);
+        		ObjectTile opening = ObjectTileFactory.createReflective(objectElement, j);
+        		// Атрибут void позволяет случайно не ставить окно/дверь
+        		if(!opening.placeble) {
+        			continue;
+        		}
+        		opening.x += x;
+        		opening.y += y;
+        		data.Openings.add(opening);
+        	}
+        }
+	}
+	
+	public static void loadRandGroup(CommonData data, Element roomElement,List<RandomGroup> RandomGroups, int x, int y) {
 		NodeList randomGroupsNodes = roomElement.getElementsByTagName("RandomGroup");
-		for (int i = 0; i < randomGroupsNodes.getLength(); i++) {
-			Element randomGroupElement = (Element) randomGroupsNodes.item(i);
-			String name = randomGroupElement.getAttribute("name");
-			NodeList groopObjectsNodes = randomGroupElement.getElementsByTagName("object");
-			for (int j = 0; j < groopObjectsNodes.getLength(); j++) {
-				RandomGroup newRandomGroup = new RandomGroup(data);
-				Element groopObjectsElement = (Element) groopObjectsNodes.item(j);
-				String x = groopObjectsElement.getAttribute("x");
-				String y = groopObjectsElement.getAttribute("y");
-				newRandomGroup.loadRandomGroups(name, x, y, offsetX, offsetY); // [AI] +смещение
-				RandomGroups.add(newRandomGroup);
-			}
+        for(int i=0;i<randomGroupsNodes.getLength();i++) {
+        	Element randomGroupElement = (Element)randomGroupsNodes.item(i);
+        	String name = randomGroupElement.getAttribute("name");
+        	NodeList groopObjectsNodes = randomGroupElement.getElementsByTagName("object");
+        	for(int j=0;j<groopObjectsNodes.getLength();j++) {
+            	RandomGroup newRandomGroup = new RandomGroup(data);
+        		Element groopObjectsElement = (Element) groopObjectsNodes.item(j);
+        		String rangeX =  groopObjectsElement.getAttribute("x");
+        		String rangeY =  groopObjectsElement.getAttribute("y");
+        		boolean placeble = true;
+        		if (groopObjectsElement.hasAttribute("void")) {
+        			placeble= chance(groopObjectsElement.getAttribute("void"));
+        		}
+        		if(placeble) {
+        		newRandomGroup.loadRandomGroup(name,rangeX,rangeY,x,y);
+        		}
+        		RandomGroups.add(newRandomGroup);
+        	}
+        }
+	}
+	public static void loadRandRoom(CommonData data, Element buildindElement) {
+		NodeList randomRoomsNodes = buildindElement.getElementsByTagName("room");
+		if(randomRoomsNodes.getLength()==0) {
+			throw new IllegalArgumentException("Ошибка загрузки задния - "+buildindElement.getAttribute("name")+" - отсутствуют комнаты");
+		}
+		for(int i=0;i<randomRoomsNodes.getLength();i++) {
+			Element randomRoomElement = (Element)randomRoomsNodes.item(i);
+        	String name = randomRoomElement.getAttribute("name");
+        	int x =  Integer.parseInt(randomRoomElement.getAttribute("x"));
+    		int y =  Integer.parseInt(randomRoomElement.getAttribute("y"));
+    		int floor =  Integer.parseInt(randomRoomElement.getAttribute("floor"));
+        	Room newRoom = new Room(data);
+        	newRoom.loadRoom(name,x,y,floor);
+        	data.randomRooms.add(newRoom);
 		}
 	}
 }
