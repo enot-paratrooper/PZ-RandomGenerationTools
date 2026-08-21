@@ -28,9 +28,6 @@
  <object type="BuildingParameter" parameter="GrimeWall"/>
 </NonrandomElement>
 
-<!-- Готовые наборы тайлов крыши: параметры RoofCap, RoofSlope, RoofTop -->
-<RoofTiles name="Default"/>
-
 <Rooms>
 	<Room name="TestRoom_22_28" x="2" y="2" floor="0"/>
 	<Room name="TestRoom_22_28" x="2" y="30" floor="0"/>
@@ -38,17 +35,6 @@
 	<Room name="TestRoom_22_28" x="2" y="30" floor="1"/>
 	<Room name="TestRoom_22_28" x="2" y="2" floor="2"/>
 </Rooms>
-
-<!--
-  basic задаёт тип крыши для всех блоков комнат здания.
-  Отдельный <roof> переопределяет тип на конкретном этаже,
-  type="none" отключает крышу на этаже.
-  Крыша ставится на этаж выше последней комнаты в стопке, поэтому здесь
-  получаются две крыши: на этаже 2 (над стопкой y=30) и на этаже 3 (над y=2).
--->
-<Roofs basic="PeakNS">
-	<roof type="FlatTop" floor="3"/>
-</Roofs>
 
 <NonrandomElement num="2" globalvariable="varChairs">
 <object type="furniture" orient="W" x="5" y="27"/>

@@ -4,6 +4,13 @@ import static tools.StringTools.splitString;
 
 import java.util.List;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -11,6 +18,7 @@ import containers.CommonData;
 import randGroups.RandomGroup;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
+import randRoomGen.RawTileEntry;
 import randRoomGen.ObjectTiles.GlobalParameter;
 import randRoomGen.ObjectTiles.ObjectTile;
 import randRoomGen.ObjectTiles.ObjectTileFactory;
@@ -210,6 +218,82 @@ public class LoadFunc {
         	int roomIndex = data.randomRooms.size();
         	data.randomRooms.add(newRoom);
         	newRoom.loadRoom(name,x,y,floor,roomIndex);
+		}
+	}
+
+	// =====================================================================
+	// Готовые tile_entry (наборы тайлов крыши)
+	// =====================================================================
+
+	/**
+	 * AI: новая функция.
+	 *
+	 * Загрузка готовых блоков tile_entry из файла conf/RoofTiles/RoofTiles_<имя>.xml.
+	 *
+	 * В здании пишется так:
+	 *   <RoofTiles name="Default"/>
+	 *   <RoofTiles name="Default; Shingles"/>   - один набор выбирается случайно
+	 *
+	 * Файл набора:
+	 *   <RoofTiles name="Default">
+	 *     <TileEntry parameter="RoofCap">
+	 *       <tile_entry category="roof_caps"> ... </tile_entry>
+	 *     </TileEntry>
+	 *     ...
+	 *   </RoofTiles>
+	 *
+	 * Наборы крыши не проходят через Tileset: в них есть пустые тайлы,
+	 * атрибуты offset и тайлы из разных тайлсетов, поэтому блок переносится
+	 * в .tbx дословно.
+	 */
+	public static void loadRoofTiles(CommonData data, Element mainElement) {
+		NodeList roofTilesNodes = mainElement.getElementsByTagName("RoofTiles");
+		for(int i=0;i<roofTilesNodes.getLength();i++) {
+			Element roofTilesElement = (Element)roofTilesNodes.item(i);
+			String names = roofTilesElement.getAttribute("name");
+			if(names.trim().isEmpty()) {
+				throw new IllegalArgumentException("У блока RoofTiles не задан name");
+			}
+			List<String> variants = splitString(names);
+			String pickedName = variants.get(CommonData.random.nextInt(variants.size()));
+			loadRoofTilesFile(data, pickedName.trim());
+		}
+	}
+
+	private static void loadRoofTilesFile(CommonData data, String setName) {
+		try {
+			String fileName = "..\\RandomRoomGenerator\\conf\\RoofTiles\\RoofTiles_" + setName + ".xml";
+
+			InputStream inputStream = LoadFunc.class.getResourceAsStream(fileName);
+			if (inputStream == null) {
+				inputStream = new FileInputStream(fileName);
+			}
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(inputStream);
+			document.getDocumentElement().normalize();
+			Element rootElement = document.getDocumentElement();
+
+			NodeList tileEntryNodes = rootElement.getElementsByTagName("TileEntry");
+			if(tileEntryNodes.getLength()==0) {
+				throw new IllegalArgumentException("В наборе тайлов крыши '" + setName + "' нет ни одного TileEntry");
+			}
+			for(int i=0;i<tileEntryNodes.getLength();i++) {
+				Element tileEntryWrapper = (Element)tileEntryNodes.item(i);
+				String parameter = tileEntryWrapper.getAttribute("parameter");
+				String type = tileEntryWrapper.getAttribute("type");
+				if(type.trim().isEmpty()) {
+					type = "BuildingParameter";
+				}
+				Element rawEntry = (Element) tileEntryWrapper.getElementsByTagName("tile_entry").item(0);
+				RawTileEntry newRawTileEntry = new RawTileEntry();
+				newRawTileEntry.load(rawEntry, parameter, type);
+				data.RawTileEntries.add(newRawTileEntry);
+			}
+			inputStream.close();
+		} catch (Exception e) {
+			System.err.println("Ошибка загрузки набора тайлов крыши '" + setName + "': " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

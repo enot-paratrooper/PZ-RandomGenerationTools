@@ -60,4 +60,12 @@ public abstract class Collection {
     public int getFloor(){
 		return 0;
 	}
+    /**
+     * AI: готовый блок <tile_entry> для дословной записи в .tbx.
+     * null - набор собирается обычным способом из Tileset.
+     * Переопределён только в RawTileEntry.
+     */
+    public org.w3c.dom.Element getRawTileEntry(){
+		return null;
+	}
 }

@@ -7,6 +7,7 @@ import java.util.Random;
 import randRoomGen.Collection;
 import randRoomGen.NonrandomElement;
 import randRoomGen.RandomCollection;
+import randRoomGen.RawTileEntry;
 import randRoomGen.Room;
 import randRoomGen.UsedFurniture;
 import randRoomGen.ObjectTiles.ObjectTile;
@@ -17,6 +18,8 @@ public class CommonData {
 	public List<Room> randomRooms = new ArrayList<>(10);
 	public List<RandomCollection> RandomCollections = new ArrayList<>(30);
 	public List<NonrandomElement> NonrandomElements = new ArrayList<>(30);
+	/** AI: готовые блоки tile_entry (крыши и прочие фиксированные наборы). */
+	public List<RawTileEntry> RawTileEntries = new ArrayList<>(5);
 	public List<Collection> Collections = new ArrayList<>(60);
 	public List<Collection> usedFurniture = new ArrayList<>(40);
 	public List<Collection> usedTile = new ArrayList<>(20);
@@ -94,8 +97,10 @@ public class CommonData {
 	}
 	public void InitLinks() {
 		try {
-		for(int i=RandomCollections.size();i<Collections.size();i++) {
-			NonrandomElement linkedCollection = (NonrandomElement)Collections.get(i);
+		// AI: раньше цикл шёл до конца Collections и приводил каждый элемент
+		// к NonrandomElement. После появления RawTileEntry в конце списка
+		// это упало бы с ClassCastException, поэтому идём прямо по списку.
+		for(NonrandomElement linkedCollection : NonrandomElements) {
 			Integer linknumber =linkedCollection.getLinkNumber();
 			if( linknumber != -1) {
 				linkedCollection.setTileset(RandomCollections.get(linknumber).getPickedTileSet());
@@ -125,6 +130,9 @@ public class CommonData {
 		// Объеденение коллекций
 		Collections.addAll(RandomCollections);
 		Collections.addAll(NonrandomElements);
+		// AI: готовые tile_entry идут последними, чтобы не сдвигать
+		// уже существующую нумерацию наборов
+		Collections.addAll(RawTileEntries);
 	}
 	/**
 	 * Сквозная нумерация наборов тайлов и наборов мебели по всему зданию.

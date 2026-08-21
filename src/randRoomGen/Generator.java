@@ -29,7 +29,7 @@ public class Generator {
 	{
 		CommonData data = new CommonData();
 		Building building = new Building(data);
-		building.loadBuilding("TestFloors");
+		building.loadBuilding("TestBuilding");
 		data.MergeCollections();
 		data.DetermineListType();
 		data.InitTileSets();

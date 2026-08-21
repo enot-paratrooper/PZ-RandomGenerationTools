@@ -13,6 +13,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import randBuildingGen.Building;
+import randBuildingGen.Roof;
 import randRoomGen.Collection;
 import randRoomGen.Room;
 import randRoomGen.UsedFurniture;
@@ -202,6 +203,10 @@ public class XmlCreator {
 
                 SetOpenings(floorElement, data, building, doc, floor);
 
+                // AI: крыши этажа. В образцах объект крыши идёт после
+                // остальных объектов этажа, прямо перед сеткой rooms.
+                SetRoofs(floorElement, building, doc, floor);
+
                 Element roomsElement = doc.createElement("rooms");
                 roomsElement.setTextContent("\n" + building.getRoomCellsString(floor) + "\n");
                 floorElement.appendChild(roomsElement);
@@ -232,6 +237,14 @@ public class XmlCreator {
             String TypeOfRoomparametr = coll.GetParameter();
             data.UsedTiles.add(iterTileSet);
             iterTileSet++;
+            // AI: готовый блок tile_entry переносится дословно.
+            // Так пишутся наборы тайлов крыши: в них есть пустые тайлы,
+            // атрибуты offset и тайлы из разных тайлсетов.
+            Element rawTileEntry = coll.getRawTileEntry();
+            if (rawTileEntry != null) {
+                buildingElement.appendChild(doc.importNode(rawTileEntry, true));
+                continue;
+            }
             switch (TypeOfRoomparametr) {
             case "InteriorWall":
                 appendTileEntry(doc, buildingElement, "interior_walls", directionForWalls, coll);
@@ -273,13 +286,14 @@ public class XmlCreator {
             case "Stairs":
                 appendTileEntry(doc, buildingElement, "stairs", directionForStairs, coll);
                 break;
-            // AI: крыша пока не поддержана - у roof_caps и roof_slopes десятки
-            // enum-ов, часть с пустыми тайлами, механизм коллекций так не умеет.
+            // AI: наборы крыши задаются только готовыми tile_entry
+            // (блок RoofTiles), собрать их из Tileset нельзя.
             case "RoofCap":
             case "RoofSlope":
             case "RoofTop":
                 throw new IllegalArgumentException("Параметр крыши '" + TypeOfRoomparametr
-                        + "' пока не поддержан, крыша обрабатывается отдельным классом");
+                        + "' нельзя задать через RandomCollection. "
+                        + "Используйте блок <RoofTiles name=\"...\"/> с готовыми tile_entry");
             default:
                 throw new IllegalArgumentException("Неизвестный параметр комнаты: " + TypeOfRoomparametr);
             }
@@ -378,6 +392,45 @@ public class XmlCreator {
             tileEntryElement.appendChild(tileElement);
         }
         buildingElement.appendChild(tileEntryElement);
+    }
+
+    // =====================================================================
+    // Крыши
+    // =====================================================================
+
+    /**
+     * AI: новый метод. Запись объектов крыши указанного этажа.
+     *
+     * Наборы тайлов общие на здание, поэтому CapTiles/SlopeTiles/TopTiles
+     * берутся из параметров RoofCap/RoofSlope/RoofTop.
+     */
+    private static void SetRoofs(Element floorElement, Building building, Document doc, int floor) {
+        java.util.List<Roof> roofs = building.getRoofs(floor);
+        if (roofs.isEmpty()) {
+            return;
+        }
+        warnIfNotSet("RoofCap", building.getRoofCap());
+        warnIfNotSet("RoofSlope", building.getRoofSlope());
+        warnIfNotSet("RoofTop", building.getRoofTop());
+
+        for (Roof roof : roofs) {
+            Element objectElement = doc.createElement("object");
+            objectElement.setAttribute("type", "roof");
+            objectElement.setAttribute("width", Integer.toString(roof.width));
+            objectElement.setAttribute("height", Integer.toString(roof.height));
+            objectElement.setAttribute("RoofType", roof.roofType);
+            objectElement.setAttribute("Depth", roof.depth);
+            objectElement.setAttribute("cappedW", Boolean.toString(roof.cappedW));
+            objectElement.setAttribute("cappedN", Boolean.toString(roof.cappedN));
+            objectElement.setAttribute("cappedE", Boolean.toString(roof.cappedE));
+            objectElement.setAttribute("cappedS", Boolean.toString(roof.cappedS));
+            objectElement.setAttribute("CapTiles", Integer.toString(building.getRoofCap()));
+            objectElement.setAttribute("SlopeTiles", Integer.toString(building.getRoofSlope()));
+            objectElement.setAttribute("TopTiles", Integer.toString(building.getRoofTop()));
+            objectElement.setAttribute("x", Integer.toString(roof.x));
+            objectElement.setAttribute("y", Integer.toString(roof.y));
+            floorElement.appendChild(objectElement);
+        }
     }
 
     // =====================================================================
@@ -507,8 +560,9 @@ public class XmlCreator {
 
     private static void warnIfNotSet(String parameterName, int value) {
         if (value == 0) {
-            System.err.println("Предупреждение: размещён объект, которому нужен параметр комнаты '"
-                    + parameterName + "', но соответствующая RandomCollection не задана");
+            // AI: сообщение обобщено - параметр может быть и комнатным, и общим на здание
+            System.err.println("Предупреждение: размещён объект, которому нужен параметр '"
+                    + parameterName + "', но соответствующий набор тайлов не задан");
         }
     }
 

@@ -31,10 +31,14 @@ public class buildingGenerator {
 			room.InitRoomparameters();
 		}
 
-		// Отладочная карта этажей
+		// Отладочная карта этажей и список крыш
 		for(int floor = 0; floor < building.getFloorCount(); floor++) {
 			System.out.println("Этаж " + floor + ":");
 			System.out.println(building.getFloorMap(floor));
+		}
+		// AI: крыши строятся внутри loadBuilding, здесь только печать
+		for(Roof roof : building.getRoofs()) {
+			System.out.println("Крыша: " + roof);
 		}
 
 		XmlCreator.createBuildingXml("C:\\Users\\I\\Desktop\\1231\\testBuilding.tbx", data, building);

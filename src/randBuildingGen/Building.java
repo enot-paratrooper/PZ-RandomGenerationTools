@@ -2,6 +2,7 @@ package randBuildingGen;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -18,6 +19,7 @@ import static commonFunc.LoadFunc.loadRandColl;
 import static commonFunc.LoadFunc.loadNonRandE;
 import static commonFunc.LoadFunc.loadOpenings;
 import static commonFunc.LoadFunc.loadRandRoom;
+import static commonFunc.LoadFunc.loadRoofTiles;
 
 /**
  * Здание целиком: параметры, объекты уровня здания, комнаты и массив клеток.
@@ -29,6 +31,7 @@ import static commonFunc.LoadFunc.loadRandRoom;
  *   2) объекты уровня здания   - loadRandColl / loadNonRandE / loadOpenings
  *   3) комнаты                 - loadRandRoom
  *   4) массив клеток здания    - InitBuildingCells (сквозная нумерация комнат)
+ *   5) крыши                   - InitRoofs (AI: добавлен шаг)
  *
  * Порядок 1-2-3 обязателен: коллекции уровня здания должны попасть
  * в data.RandomCollections раньше комнатных, иначе смещение #define
@@ -59,11 +62,18 @@ public class Building {
 	private int[][][] buildingCells;
 	private int floorCount = 1;
 
+	/** AI: крыши здания. */
+	private List<Roof> roofs = new ArrayList<Roof>();
+	private RoofGenerator.RoofPlan roofPlan = new RoofGenerator.RoofPlan();
+
 	/** AI: диапазоны коллекций, загруженных на уровне здания (для InitBuildingparameters). */
 	private int randStart = 0;
 	private int randEnd = 0;
 	private int nonRandStart = 0;
 	private int nonRandEnd = 0;
+	/** AI: диапазон готовых tile_entry (наборы тайлов крыши). */
+	private int rawStart = 0;
+	private int rawEnd = 0;
 
 	private CommonData data;
 
@@ -103,6 +113,7 @@ public class Building {
 			// --- 2) Объекты уровня здания ---
 			randStart = data.RandomCollections.size();
 			nonRandStart = data.NonrandomElements.size();
+			rawStart = data.RawTileEntries.size();
 
 			// Этаж по умолчанию 0, конкретный объект может задать floor="N".
 			loadRandColl(data, buildingElement, 0, 0, 0);
@@ -110,15 +121,24 @@ public class Building {
 			// roomIndex = -1: у проёма уровня здания нет комнаты-владельца,
 			// наборы тайлов по умолчанию берутся из параметров здания.
 			loadOpenings(data, buildingElement, 0, 0, 0, -1);
+			// AI: готовые наборы тайлов крыши
+			loadRoofTiles(data, buildingElement);
 
 			randEnd = data.RandomCollections.size();
 			nonRandEnd = data.NonrandomElements.size();
+			rawEnd = data.RawTileEntries.size();
+
+			// AI: план крыш читается здесь, а строятся крыши после сетки клеток
+			roofPlan = RoofGenerator.parsePlan(buildingElement);
 
 			// --- 3) Комнаты ---
 			loadRandRoom(data, buildingElement);
 
 			// --- 4) Массив клеток здания ---
 			InitBuildingCells();
+
+			// --- 5) Крыши ---
+			InitRoofs();
 
 			inputStream.close();
 		} catch (Exception e) {
@@ -169,6 +189,11 @@ public class Building {
 	 * Любое ненулевое значение в сетке комнаты считается клеткой этой комнаты.
 	 */
 	public void InitBuildingCells() {
+		InitBuildingCells(true);
+	}
+
+	/** AI: verbose=false при повторной сборке после надстройки этажей под крыши. */
+	public void InitBuildingCells(boolean verbose) {
 		List<Room> rooms = data.randomRooms;
 
 		int neededFloors = this.floorCount;
@@ -184,7 +209,7 @@ public class Building {
 			int level = room.getLevel();
 			int[][] cells = room.getRoomCells();
 			if (cells == null) {
-				System.err.println("Предупреждение: у комнаты '" + room.getName()
+				if (verbose) System.err.println("Предупреждение: у комнаты '" + room.getName()
 						+ "' (номер " + roomNumber + ") нет сетки клеток, комната пропущена");
 				roomNumber++;
 				continue;
@@ -197,12 +222,12 @@ public class Building {
 					int gx = room.getX() + cx;
 					int gy = room.getY() + cy;
 					if (gx < 0 || gx >= width || gy < 0 || gy >= height) {
-						System.err.println("Предупреждение: комната '" + room.getName() + "' (номер "
+						if (verbose) System.err.println("Предупреждение: комната '" + room.getName() + "' (номер "
 								+ roomNumber + ") выходит за границы здания в точке "
 								+ gx + "," + gy + " - клетка пропущена");
 						continue;
 					}
-					if (buildingCells[level][gy][gx] != 0) {
+					if (buildingCells[level][gy][gx] != 0 && verbose) {
 						System.err.println("Предупреждение: комнаты " + buildingCells[level][gy][gx]
 								+ " и " + roomNumber + " перекрываются на этаже " + level
 								+ " в точке " + gx + "," + gy);
@@ -212,6 +237,51 @@ public class Building {
 			}
 			roomNumber++;
 		}
+	}
+
+	// =====================================================================
+	// Шаг 5: крыши
+	// =====================================================================
+
+	/**
+	 * AI: новый метод.
+	 *
+	 * Построение крыш по блоку <Roofs> и по массиву клеток здания.
+	 *
+	 * Двускатной крыше (PeakNS, PeakWE) нужен пустой этаж сверху, иначе
+	 * TileZed обрежет скаты. Если такого этажа нет, здание надстраивается
+	 * и сетка клеток пересобирается - лишний этаж остаётся пустым,
+	 * как в образцах samp1 и samp2. Плоской крыше надстройка не нужна
+	 * (samp3: крыши на этажах 2 и 3, всего 4 этажа).
+	 */
+	public void InitRoofs() {
+		roofs = RoofGenerator.generate(buildingCells, width, height, roofPlan);
+
+		int requiredFloors = floorCount;
+		for (Roof roof : roofs) {
+			requiredFloors = Math.max(requiredFloors, roof.requiredFloorCount());
+		}
+		if (requiredFloors > floorCount) {
+			floorCount = requiredFloors;
+			// Пересобираем сетку клеток под новое количество этажей.
+			// Комнаты не меняются, добавленные этажи остаются пустыми.
+			InitBuildingCells(false);
+		}
+	}
+
+	public List<Roof> getRoofs() {
+		return roofs;
+	}
+
+	/** Крыши указанного этажа. */
+	public List<Roof> getRoofs(int floor) {
+		List<Roof> result = new ArrayList<Roof>();
+		for (Roof roof : roofs) {
+			if (roof.floor == floor) {
+				result.add(roof);
+			}
+		}
+		return result;
 	}
 
 	// =====================================================================
@@ -245,6 +315,10 @@ public class Building {
 			}
 			for (int i = nonRandStart; i < nonRandEnd; i++) {
 				applyBuildingParameter(data.NonrandomElements.get(i));
+			}
+			// AI: готовые tile_entry крыши тоже задают параметры здания
+			for (int i = rawStart; i < rawEnd; i++) {
+				applyBuildingParameter(data.RawTileEntries.get(i));
 			}
 		} catch (Exception e) {
 			System.err.println("Ошибка загрузки параметров здания: " + e.getMessage());
