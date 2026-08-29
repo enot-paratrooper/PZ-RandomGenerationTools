@@ -1,30 +1,33 @@
 package mapgen.core;
 
 import mapgen.colors.Palette;
-import mapgen.rivers.RiverNetwork;
 
 import java.util.Random;
 
 /**
- * Мир — бесконечная плоскость в мировых пиксельных координатах. Высота, влажность и вода
- * детерминированы относительно seed, поэтому любой блок можно сгенерировать в любой момент,
- * и он сойдётся с соседями по швам.
+ * Мир — бесконечная плоскость в мировых пиксельных координатах. Высота, влажность и прочие
+ * поля детерминированы относительно seed, поэтому любой блок можно сгенерировать в любой
+ * момент и он сойдётся с соседями по швам.
+ *
+ * <p><b>Инвариант многопоточности:</b> этот класс не хранит ни изменяемого состояния,
+ * ни кэшей. Все методы — чистые функции от (seed, wx, wy) и потокобезопасны без синхронизации.
+ * Любое кэширование живёт в {@link GenContext}, по одному экземпляру на поток.
+ * Речная вода здесь тоже не хранится: она приходит через {@link mapgen.rivers.WaterMask}
+ * отдельным параметром, иначе World перестал бы быть чистым.
  */
 public final class World {
     public static final int CHUNK_SIZE = 300;
 
     private final long seed;
     private final Palette palette;
-    private final WorldState state;
-    private final NoiseField heightField, drainageField, meanderField, moistureField, patchField, forestField, bushField;
+    private final NoiseField heightField, drainageField, meanderField, moistureField,
+            patchField, forestField, bushField;
     /** Доля крупномасштабного уклона в высоте: 0 — чистый Perlin, 1 — только "водоразделы/долины". */
     private static final float DRAINAGE_WEIGHT = 0.38f;
-    private final RiverNetwork rivers;
     private final double seaLevel, rockLevel;
 
-    public World(WorldState state, Palette palette, double seaLevel, double rockLevel) {
-        this.seed = state.seed;
-        this.state = state;
+    public World(long seed, Palette palette, double seaLevel, double rockLevel) {
+        this.seed = seed;
         this.palette = palette;
         this.seaLevel = seaLevel;
         this.rockLevel = rockLevel;
@@ -35,15 +38,12 @@ public final class World {
         this.patchField    = new NoiseField(seed + 42,    18, 3, 1.0);
         this.forestField   = new NoiseField(seed + 777,   90, 5, 1.0);
         this.bushField     = new NoiseField(seed + 999,   36, 3, 1.0);
-        this.rivers = new RiverNetwork(this, state);
     }
 
-    public long seed()           { return seed; }
-    public Palette palette()     { return palette; }
-    public WorldState state()    { return state; }
-    public RiverNetwork rivers() { return rivers; }
-    public double seaLevel()     { return seaLevel; }
-    public double rockLevel()    { return rockLevel; }
+    public long seed()       { return seed; }
+    public Palette palette() { return palette; }
+    public double seaLevel() { return seaLevel; }
+    public double rockLevel(){ return rockLevel; }
 
     /**
      * Высота = локальный рельеф + крупномасштабный уклон. Благодаря уклону у воды всегда есть
@@ -69,10 +69,7 @@ public final class World {
     /** Природное озеро (ниже уровня моря) — только по шуму, без рек. */
     public boolean isLake(int wx, int wy) { return height(wx, wy) < seaLevel; }
 
-    /** Любая вода: природное озеро либо русло/озеро реки. */
-    public boolean isWater(int wx, int wy) { return isLake(wx, wy) || rivers.isWater(wx, wy); }
-
-    /** Детерминированный Random для (salt, cx, cy). */
+    /** Детерминированный Random для (salt, cx, cy) — не зависит от порядка обхода блоков. */
     public Random random(String salt, int cx, int cy) {
         long h = seed ^ (salt.hashCode() * 0x9E3779B97F4A7C15L) ^ (cx * 73856093L) ^ (cy * 19349663L);
         return new Random(h * 0xBF58476D1CE4E5B9L);

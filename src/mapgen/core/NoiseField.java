@@ -2,7 +2,10 @@ package mapgen.core;
 
 import mapgen.noise.PerlinNoise;
 
-/** Бесконечное детерминированное поле [0,1] в мировых координатах: значение зависит только от seed и (wx, wy). */
+/**
+ * Бесконечное детерминированное поле [0,1] в мировых координатах: значение зависит только
+ * от seed и (wx, wy). Неизменяемо после конструктора, поэтому потокобезопасно без синхронизации.
+ */
 public final class NoiseField {
     private final PerlinNoise noise;
     private final double scale, power;

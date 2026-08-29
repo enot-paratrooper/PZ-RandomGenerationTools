@@ -2,16 +2,18 @@ package mapgen.generators;
 
 import mapgen.colors.Palette;
 import mapgen.core.Chunk;
+import mapgen.core.GenContext;
 import mapgen.core.Generator;
 import mapgen.core.Layer;
 import mapgen.core.World;
 
 /** Базовая поверхность: озёра -> песок -> травы по влажности с пятнами земли -> камни на высотах. */
 public final class BaseSurfaceGenerator implements Generator {
-    @Override public String name() { return "BaseSurface"; }
+    @Override public String name() { return "surface"; }
 
     @Override
-    public void generate(World world, Chunk chunk) {
+    public void generate(GenContext ctx, Chunk chunk) {
+        World world = ctx.world();
         Palette p = world.palette();
         Layer base = chunk.base();
         double sea = world.seaLevel(), rock = world.rockLevel();
@@ -19,7 +21,7 @@ public final class BaseSurfaceGenerator implements Generator {
         for (int y = 0; y < chunk.size; y++) {
             for (int x = 0; x < chunk.size; x++) {
                 int wx = chunk.worldX(x), wy = chunk.worldY(y);
-                double e = world.height(wx, wy), m = world.moisture(wx, wy), d = world.patch(wx, wy);
+                double e = ctx.height(wx, wy), m = ctx.moisture(wx, wy), d = world.patch(wx, wy);
                 int color;
                 if (e < sea) {
                     color = p.water;

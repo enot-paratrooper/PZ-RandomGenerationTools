@@ -2,7 +2,10 @@ package mapgen.core;
 
 import java.util.BitSet;
 
-/** Блок карты 300x300. Пиксель (x, y) внутри блока -> мировой (worldX(x), worldY(y)). */
+/**
+ * Блок карты 300x300. Пиксель (x, y) внутри блока -> мировой (worldX(x), worldY(y)).
+ * Принадлежит одному потоку на всё время генерации (thread-confined), синхронизация не нужна.
+ */
 public final class Chunk {
     public final int cx, cy, size;
     private final Layer base, vegetation;

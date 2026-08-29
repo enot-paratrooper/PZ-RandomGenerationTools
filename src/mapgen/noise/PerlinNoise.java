@@ -2,7 +2,10 @@ package mapgen.noise;
 
 import java.util.Random;
 
-/** Классический Perlin noise 2D + fBm. Возвращает значения примерно в [-1, 1]. */
+/**
+ * Классический Perlin noise 2D + fBm. Возвращает значения примерно в [-1, 1].
+ * Таблица перестановок заполняется в конструкторе и дальше только читается — потокобезопасно.
+ */
 public final class PerlinNoise {
     private final int[] perm = new int[512];
 
