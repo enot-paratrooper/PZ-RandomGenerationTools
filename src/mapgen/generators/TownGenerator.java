@@ -5,6 +5,7 @@ import mapgen.core.Chunk;
 import mapgen.core.GenContext;
 import mapgen.core.Generator;
 import mapgen.core.Layer;
+import mapgen.core.World;
 import mapgen.towns.BuildingPlacer;
 import mapgen.towns.StubBuildingPlacer;
 import mapgen.towns.Town;
@@ -25,12 +26,32 @@ import java.util.List;
  * (по ней не строим), а растительность ещё нет — след города помечается
  * {@link Chunk#blockVegetation}, иначе на асфальте вырастет лес.
  *
+ * <p>AI: дороги теперь асфальтовые и различаются по классу, а не «гравий против грунта».
+ * Класс берётся из ширины полосы, которую заложила нарезка кварталов: {@code baseStreetWidth}
+ * даёт 14 px на первых разрезах, 10 на средних и 7 на последних, всё это домножается на
+ * {@code streetScale} района. Так магистраль остаётся магистралью и на промышленной окраине,
+ * где полосы шире, и в тесном центре, где уже.
+ *
  * <p>Полей, кроме неизменяемого застройщика, нет — экземпляр разделяется потоками.
  */
 public final class TownGenerator implements Generator {
 
-    /** С этой ширины улица считается магистралью и рисуется гравием, а не грунтом. */
-    private static final int WIDE_STREET = 10;
+    /** AI: с этой ширины полоса — магистраль (street2, самый тёмный асфальт). */
+    private static final int HIGHWAY_WIDTH = 12;
+
+    /** AI: с этой — обычная улица (street). Всё, что уже, считается проездом или подъездом. */
+    private static final int STREET_WIDTH = 7;
+
+    /** AI: рисовать ли износ полотна. Выключается одним флагом, если понадобится чистый асфальт. */
+    private static final boolean POTHOLES = true;
+
+    /**
+     * AI: пороги износа по полю {@link World#patch}. Поле — чистая функция мировых координат,
+     * поэтому пятна не рвутся на швах блоков и не зависят ни от числа потоков, ни от порядка
+     * обхода. Оно же лепит пятна земли в {@link BaseSurfaceGenerator}, так что затёртый асфальт
+     * ложится там же, где рядом проступает грунт, — это скорее плюс.
+     */
+    private static final double WORN_LEVEL = 0.80, POTHOLE_LEVEL = 0.88;
 
     private final BuildingPlacer placer;
 
@@ -47,7 +68,8 @@ public final class TownGenerator implements Generator {
         List<Town> towns = ctx.towns().intersecting(ox, oy, mx, my);
         if (towns.isEmpty()) return;
 
-        Palette p = ctx.world().palette();
+        World world = ctx.world();
+        Palette p = world.palette();
         Layer base = chunk.base();
 
         for (Town t : towns) {
@@ -55,12 +77,12 @@ public final class TownGenerator implements Generator {
                 int x0 = Math.max(ox, t.streetX0(i)), x1 = Math.min(mx, t.streetX1(i));
                 int y0 = Math.max(oy, t.streetY0(i)), y1 = Math.min(my, t.streetY1(i));
                 if (x0 > x1 || y0 > y1) continue;
-                int color = t.streetWidth(i) >= WIDE_STREET ? p.gravelDirt : p.dirt;
+                int surface = roadSurface(p, t.streetWidth(i));
                 for (int wy = y0; wy <= y1; wy++) {
                     for (int wx = x0; wx <= x1; wx++) {
                         if (ctx.isWater(wx, wy)) continue;      // мостов пока нет
                         int x = wx - ox, y = wy - oy;
-                        base.set(x, y, color);
+                        base.set(x, y, wear(p, world, surface, wx, wy));
                         chunk.blockVegetation(x, y);
                     }
                 }
@@ -74,5 +96,24 @@ public final class TownGenerator implements Generator {
                 placer.placeFacility(ctx, chunk, t, f);
             }
         }
+    }
+
+    /** AI: класс дороги по ширине полосы. */
+    private static int roadSurface(Palette p, int width) {
+        if (width >= HIGHWAY_WIDTH) return p.darkAsphalt;
+        if (width >= STREET_WIDTH)  return p.mediumAsphalt;
+        return p.lightAsphalt;
+    }
+
+    /**
+     * AI: износ полотна. Обочины и подъезды (lightgravel) не затираем — на них выбоины
+     * читались бы как грязь, а не как разбитый асфальт.
+     */
+    private static int wear(Palette p, World world, int surface, int wx, int wy) {
+        if (!POTHOLES || surface == p.lightAsphalt) return surface;
+        double d = world.patch(wx, wy);
+        if (d > POTHOLE_LEVEL) return p.lightPothole;
+        if (d > WORN_LEVEL)    return p.darkPothole;
+        return surface;
     }
 }

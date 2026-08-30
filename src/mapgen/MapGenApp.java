@@ -11,6 +11,8 @@ import mapgen.generators.RiverGenerator;
 import mapgen.generators.TownGenerator;
 import mapgen.generators.VegetationGenerator;
 import mapgen.io.ChunkStore;
+import mapgen.io.PzwStore;
+import mapgen.io.PzwTemplate;
 import mapgen.io.RiverDebugExporter;
 import mapgen.io.TmxStore;
 import mapgen.io.TmxTemplate;
@@ -22,6 +24,7 @@ import mapgen.rivers.RiverTracer;
 import mapgen.rivers.WaterMask;
 
 import javax.imageio.ImageIO;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,10 +51,17 @@ import java.util.concurrent.Future;
  * <p>Города собственной фазы не требуют: их геометрия — чистая функция от (seed, координаты),
  * поэтому TownGenerator работает прямо в фазе 3 (см. mapgen.towns.TownField).
  *
- * <p>Основной результат — ячейки {@code <префикс>_<cx>_<cy>.tmx} в outDir плюс {@code world.state}.
- * Растровая отладка (chunks/*.bmp, map.bmp, map_veg.bmp, debug_rivers.bmp, debug_towns.bmp)
- * пишется только с флагом {@code debug}: на больших диапазонах она стоит дороже самой генерации
- * и упирается в память при склейке.
+ * <p>AI: раскладка выхода — готовый к открытию мир WorldEd:
+ * <pre>
+ *   &lt;outDir&gt;/&lt;мир&gt;/&lt;мир&gt;.pzw
+ *   &lt;outDir&gt;/&lt;мир&gt;/tmx/&lt;префикс&gt;_&lt;cx&gt;_&lt;cy&gt;.tmx
+ *   &lt;outDir&gt;/&lt;мир&gt;/png/&lt;cx&gt;_&lt;cy&gt;.png, &lt;cx&gt;_&lt;cy&gt;_veg.png
+ *   &lt;outDir&gt;/&lt;мир&gt;/world.state
+ *   &lt;outDir&gt;/&lt;мир&gt;/debug/...            только с флагом debug
+ * </pre>
+ * Картинки блоков в {@code png/} отладкой уже не считаются: на них ссылается .pzw, без них мир
+ * не откроется. Флаг {@code debug} гасит только обзорные растры — склейку map.bmp / map_veg.bmp
+ * и карты рек и городов, которые на больших диапазонах стоят дороже самой генерации.
  *
  * <p>Объект живёт один прогон и принадлежит потоку, который его создал; параллельны только воркеры
  * внутри {@link #rasterizeChunks()}.
@@ -69,19 +79,30 @@ public final class MapGenApp implements AutoCloseable {
     public static final int SIMPLIFY_DISTANCE_PX =
             2 * RiverTracer.MAX_BRANCH_LENGTH + 2 * RiverTracer.MOUTH_WALK + RiverTracer.REGION_SIZE;
 
-    /** Как называется шаблон ячейки, если его не указали явно. */
-    public static final String DEFAULT_TEMPLATE = "template.tmx";
-    public static final String DEFAULT_TEMPLATE_PATH = "..\\RandomRoomGenerator\\conf\\mapTemplate\\template.tmx";
+    /** Как называются шаблоны, если их не указали явно. */
+    public static final String DEFAULT_TEMPLATE_PATH = "..\\RandomRoomGenerator\\conf\\mapTemplate\\";
+    public static final String DEFAULT_TMX_TEMPLATE = "template.tmx";
+    public static final String DEFAULT_PZW_TEMPLATE = "template.pzw";
 
-    /** Разобранная командная строка. Диапазон уже нормализован: cx0 <= cx1, cy0 <= cy1. */
-    public record Options(Path outDir, long seed, int cx0, int cy0, int cx1, int cy1, int threads,
-                          Path colorsMap, Path colorsVegMap, Path template, boolean debug) {}
+    /** AI: подкаталог для обзорных растров, чтобы не сорить в корне мира. */
+    public static final String DEBUG_DIR = "debug";
+
+    /** Разобранная командная строка. Диапазон уже нормализован: cx0 &lt;= cx1, cy0 &lt;= cy1. */
+    public record Options(Path outDir, String worldName, long seed,
+                          int cx0, int cy0, int cx1, int cy1, int threads,
+                          Path colorsMap, Path colorsVegMap,
+                          Path tmxTemplate, Path pzwTemplate, boolean debug) {
+
+        /** Корень мира: всё, что генерируется, лежит внутри него. */
+        public Path worldDir() { return outDir.resolve(worldName); }
+    }
 
     private final Options options;
+    private final Path worldDir;
     private final Path stateFile;
     private final TmxStore tmx;
-    /** null, если отладочные картинки не запрашивали. */
     private final ChunkStore images;
+    private final PzwStore pzw;
     private final ExecutorService pool;
     private final WaterMask mask = new WaterMask();
 
@@ -99,46 +120,53 @@ public final class MapGenApp implements AutoCloseable {
     public static Options parseArgs(String[] args) {
         List<String> positional = new ArrayList<>(args.length);
         boolean debug = false;
-        Path template = null;
+        Path tmxTemplate = null, pzwTemplate = null;
         for (String a : args) {
             String low = a.toLowerCase();
             if (low.equals("debug") || low.equals("-debug") || low.equals("--debug")) debug = true;
-            else if (low.startsWith("template=")) template = Path.of(a.substring("template=".length()));
+            else if (low.startsWith("template=")) tmxTemplate = Path.of(a.substring("template=".length()));
+            else if (low.startsWith("pzw=")) pzwTemplate = Path.of(a.substring("pzw=".length()));
             else positional.add(a);
         }
-        if (positional.size() < 6) return null;
+        if (positional.size() < 7) return null;
 
-        int ax = Integer.parseInt(positional.get(2)), ay = Integer.parseInt(positional.get(3));
-        int bx = Integer.parseInt(positional.get(4)), by = Integer.parseInt(positional.get(5));
-        int threads = positional.size() > 6 && !positional.get(6).isEmpty()
-                ? Integer.parseInt(positional.get(6))
+        int ax = Integer.parseInt(positional.get(3)), ay = Integer.parseInt(positional.get(4));
+        int bx = Integer.parseInt(positional.get(5)), by = Integer.parseInt(positional.get(6));
+        int threads = positional.size() > 7 && !positional.get(7).isEmpty()
+                ? Integer.parseInt(positional.get(7))
                 : Runtime.getRuntime().availableProcessors();
 
-        return new Options(Path.of(positional.get(0)), Long.parseLong(positional.get(1)),
+        return new Options(Path.of(positional.get(0)), positional.get(1), Long.parseLong(positional.get(2)),
                 Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by),
                 Math.max(1, threads),
-                positional.size() > 8 ? Path.of(positional.get(7)) : null,
-                positional.size() > 8 ? Path.of(positional.get(8)) : null,
-                template, debug);
+                positional.size() > 9 ? Path.of(positional.get(8)) : null,
+                positional.size() > 9 ? Path.of(positional.get(9)) : null,
+                tmxTemplate, pzwTemplate, debug);
     }
 
     public static void printUsage() {
-        System.out.println("usage: Main <outDir> <seed> <cx0> <cy0> <cx1> <cy1> "
-                + "[threads] [colorsMap.txt colorsMap_veg.txt] [template=<файл.tmx>] [debug]");
+        System.out.println("usage: Main <outDir> <название мира> <seed> <cx0> <cy0> <cx1> <cy1> "
+                + "[threads] [colorsMap.txt colorsMap_veg.txt] "
+                + "[template=<файл.tmx>] [pzw=<файл.pzw>] [debug]");
         System.out.println("  template=  шаблон ячейки WorldEd; по умолчанию ищется "
-                + DEFAULT_TEMPLATE + " в outDir, затем в текущем каталоге");
-        System.out.println("  debug      дополнительно писать картинки: chunks/*.bmp, map.bmp, "
-                + "map_veg.bmp, debug_rivers.bmp, debug_towns.bmp");
+                + DEFAULT_TMX_TEMPLATE + " в каталоге мира, затем в outDir, затем в текущем каталоге");
+        System.out.println("  pzw=       шаблон файла мира; так же по умолчанию " + DEFAULT_PZW_TEMPLATE);
+        System.out.println("  debug      дополнительно писать обзорные растры в <мир>/" + DEBUG_DIR
+                + ": map.bmp, map_veg.bmp, debug_rivers.bmp, debug_towns.bmp");
     }
 
     // ------------------------------------------------------------------ подготовка
 
     public MapGenApp(Options options) throws IOException {
         this.options = options;
-        Files.createDirectories(options.outDir());
-        this.stateFile = options.outDir().resolve("world.state");
-        this.tmx = new TmxStore(options.outDir(), TmxTemplate.load(resolveTemplate(options)));
-        this.images = options.debug() ? new ChunkStore(options.outDir()) : null;
+        this.worldDir = options.worldDir();
+        Files.createDirectories(worldDir);
+        this.stateFile = worldDir.resolve("world.state");
+        this.tmx = new TmxStore(worldDir,
+                TmxTemplate.load(resolveTemplate(options, options.tmxTemplate(), DEFAULT_TMX_TEMPLATE, DEFAULT_TEMPLATE_PATH)));
+        this.images = new ChunkStore(worldDir);
+        this.pzw = new PzwStore(worldDir, options.worldName(),
+                PzwTemplate.load(resolveTemplate(options, options.pzwTemplate(), DEFAULT_PZW_TEMPLATE, DEFAULT_TEMPLATE_PATH)));
         this.pool = Executors.newFixedThreadPool(options.threads(), r -> {
             Thread t = new Thread(r, "mapgen");
             t.setDaemon(true);
@@ -147,15 +175,15 @@ public final class MapGenApp implements AutoCloseable {
         ImageIO.setUseCache(false);  // иначе воркеры дерутся за общий дисковый кэш ImageIO
     }
 
-    /** Явный путь, иначе {@code outDir/template.tmx}, иначе {@code ./template.tmx}. */
-    private static Path resolveTemplate(Options o) throws IOException {
-        if (o.template() != null) return o.template();
-        Path inOut = o.outDir().resolve(DEFAULT_TEMPLATE);
-        if (Files.exists(inOut)) return inOut;
-        Path inCwd = Path.of(DEFAULT_TEMPLATE_PATH);
-        if (Files.exists(inCwd)) return inCwd;
-        throw new java.io.FileNotFoundException("шаблон ячейки не найден: ни " + inOut.toAbsolutePath()
-                + ", ни " + inCwd.toAbsolutePath() + ". Укажите его через template=<файл.tmx>");
+    /** Явный путь, иначе {@code <мир>/имя}, иначе {@code outDir/имя}, иначе {@code ./имя}. */
+    private static Path resolveTemplate(Options o, Path explicit, String defaultName, String defaultPath) throws IOException {
+        if (explicit != null) return explicit;
+        Path[] tried = {o.worldDir().resolve(defaultName), o.outDir().resolve(defaultName),
+                Path.of(defaultPath+defaultName)};
+        for (Path p : tried) if (Files.exists(p)) return p;
+        StringBuilder sb = new StringBuilder("шаблон " + defaultName + " не найден, искали:");
+        for (Path p : tried) sb.append("\n  ").append(p.toAbsolutePath());
+        throw new FileNotFoundException(sb.toString());
     }
 
     /** Продолжаем существующий мир или начинаем новый с seed из аргументов. */
@@ -208,8 +236,9 @@ public final class MapGenApp implements AutoCloseable {
     // ------------------------------------------------------------------ фаза 3: растеризация
 
     /**
-     * Считает недостающие блоки параллельно и пишет их ячейки .tmx. Воркеры не трогают
-     * {@link WorldState}: результаты забирает координатор, он же сбрасывает состояние на диск.
+     * Считает недостающие блоки параллельно и пишет ячейку .tmx плюс пару картинок на каждый.
+     * Воркеры не трогают {@link WorldState}: результаты забирает координатор, он же сбрасывает
+     * состояние на диск.
      */
     public void rasterizeChunks() throws Exception {
         World w = world;
@@ -231,7 +260,7 @@ public final class MapGenApp implements AutoCloseable {
                 Chunk chunk = new Chunk(cx, cy, World.CHUNK_SIZE);
                 String report = pipeline.run(contexts.get(), chunk);
                 tmx.write(chunk);
-                if (images != null) images.save(chunk);
+                images.save(chunk);
                 return report;
             }));
         }
@@ -260,19 +289,36 @@ public final class MapGenApp implements AutoCloseable {
 
     // ------------------------------------------------------------------ вывод
 
-    /** Растровая отладка. Без флага debug не пишется ничего: основной формат теперь .tmx. */
+    /**
+     * AI: файл мира. Пишется после растеризации и по всему накопленному состоянию, поэтому
+     * догенерация соседнего диапазона расширяет тот же мир, а не заменяет его.
+     */
+    public void writeWorldFile() throws IOException {
+        Path file = pzw.write(state, tmx);
+        if (file == null) {
+            System.err.println("МИР не записан: нет ни одного сгенерированного блока.");
+            return;
+        }
+        int[] bb = ChunkStore.bounds(state);
+        System.out.printf("Мир: %s, %dx%d ячеек, начало в блоке %d,%d%n",
+                file.getFileName(), bb[2] - bb[0] + 1, bb[3] - bb[1] + 1, bb[0], bb[1]);
+    }
+
+    /** Обзорные растры. Без флага debug не пишется ничего: основной формат — .tmx и .pzw. */
     public void exportDebugImages() throws Exception {
-        if (images == null) return;
-        images.stitch(state, options.outDir().resolve("map.bmp"), options.outDir().resolve("map_veg.bmp"));
-        RiverDebugExporter.export(world, state, mask, options.outDir().resolve("debug_rivers.bmp"));
-        TownDebugExporter.export(world, state, mask, options.outDir().resolve("debug_towns.bmp"));
+        if (!options.debug()) return;
+        Path dir = worldDir.resolve(DEBUG_DIR);
+        Files.createDirectories(dir);
+        images.stitch(state, dir.resolve("map.bmp"), dir.resolve("map_veg.bmp"));
+        RiverDebugExporter.export(world, state, mask, dir.resolve("debug_rivers.bmp"));
+        TownDebugExporter.export(world, state, mask, dir.resolve("debug_towns.bmp"));
     }
 
     public void printSummary() {
-        System.out.printf("Ячейки: %s_<cx>_<cy>.tmx, записано за прогон %d%n",
-                tmx.template().namePrefix(), rasterized);
+        System.out.printf("Ячейки: %s/%s_<cx>_<cy>.tmx и %s/<cx>_<cy>.png, записано за прогон %d%n",
+                TmxStore.DIR_NAME, tmx.template().namePrefix(), ChunkStore.DIR_NAME, rasterized);
         System.out.println("Рек: " + state.rivers.size() + ", блоков: " + state.generatedChunks.size()
-                + " -> " + options.outDir().toAbsolutePath());
+                + " -> " + worldDir.toAbsolutePath());
     }
 
     @Override public void close() {

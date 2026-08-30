@@ -11,8 +11,10 @@ import java.nio.file.StandardCopyOption;
 /**
  * AI: Основной выход генератора — по одной ячейке WorldEd на блок карты.
  *
- * <p>Имя файла берётся из имени шаблона: шаблон {@code map_0_0.tmx} даёт {@code map_<cx>_<cy>.tmx}.
- * Блок карты 300x300 в точности равен ячейке PZ, поэтому координаты блока и есть координаты ячейки.
+ * <p>AI: ячейки лежат в подкаталоге {@code tmx/} мира — туда же смотрит {@code <tmxexportdir>}
+ * в .pzw. Имя файла берётся из имени шаблона: шаблон {@code map_0_0.tmx} даёт
+ * {@code map_<cx>_<cy>.tmx}. Блок карты 300x300 в точности равен ячейке PZ, поэтому координаты
+ * блока и есть координаты ячейки.
  *
  * <p>{@link #write} зовётся из воркеров: имена файлов различны, общего изменяемого состояния нет,
  * {@link TmxTemplate} неизменяем. Пишем во временный файл и переименовываем — как {@code WorldState},
@@ -20,11 +22,14 @@ import java.nio.file.StandardCopyOption;
  */
 public final class TmxStore {
 
+    /** AI: подкаталог мира с ячейками. Совпадает с {@code <tmxexportdir path="tmx"/>} в .pzw. */
+    public static final String DIR_NAME = "tmx";
+
     private final Path dir;
     private final TmxTemplate template;
 
-    public TmxStore(Path outDir, TmxTemplate template) throws IOException {
-        this.dir = outDir;
+    public TmxStore(Path worldDir, TmxTemplate template) throws IOException {
+        this.dir = worldDir.resolve(DIR_NAME);
         this.template = template;
         Files.createDirectories(dir);
     }

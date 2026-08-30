@@ -1,14 +1,17 @@
 package mapgen;
 
 /**
- * AI: java -cp out mapgen.Main &lt;outDir&gt; &lt;seed&gt; &lt;cx0&gt; &lt;cy0&gt; &lt;cx1&gt; &lt;cy1&gt;
- *      [threads] [colorsMap.txt colorsMap_veg.txt] [template=&lt;файл.tmx&gt;] [debug]
+ * AI: java -cp out mapgen.Main &lt;outDir&gt; &lt;название мира&gt; &lt;seed&gt;
+ *      &lt;cx0&gt; &lt;cy0&gt; &lt;cx1&gt; &lt;cy1&gt;
+ *      [threads] [colorsMap.txt colorsMap_veg.txt]
+ *      [template=&lt;файл.tmx&gt;] [pzw=&lt;файл.pzw&gt;] [debug]
  *
  * <p>Точка входа и ничего больше: сами фазы живут в {@link MapGenApp}, чтобы порядок вызовов
  * читался как оглавление, а не тонул в разборе аргументов и таймерах.
  *
- * <p>Результат: outDir/&lt;префикс&gt;_&lt;cx&gt;_&lt;cy&gt;.tmx и world.state; с флагом
- * {@code debug} дополнительно chunks/*.bmp, map.bmp, map_veg.bmp, debug_rivers.bmp, debug_towns.bmp.
+ * <p>Результат — каталог мира {@code <outDir>/<мир>/} с {@code <мир>.pzw}, ячейками в
+ * {@code tmx/}, картинками блоков в {@code png/} и {@code world.state}; с флагом {@code debug}
+ * дополнительно обзорные растры в {@code debug/}.
  */
 public final class Main {
     private Main() {}
@@ -26,6 +29,7 @@ public final class Main {
             app.traceRivers();
             app.freezeWater();
             app.rasterizeChunks();
+            app.writeWorldFile();
             app.exportDebugImages();
             app.printSummary();
         }
