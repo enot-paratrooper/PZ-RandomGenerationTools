@@ -8,9 +8,11 @@ import mapgen.core.World;
 import mapgen.core.WorldState;
 import mapgen.generators.BaseSurfaceGenerator;
 import mapgen.generators.RiverGenerator;
+import mapgen.generators.TownGenerator;
 import mapgen.generators.VegetationGenerator;
 import mapgen.io.ChunkStore;
 import mapgen.io.RiverDebugExporter;
+import mapgen.io.TownDebugExporter;
 import mapgen.rivers.River;
 import mapgen.rivers.RiverPlanner;
 import mapgen.rivers.RiverSimplifier;
@@ -40,7 +42,11 @@ import java.util.concurrent.Future;
  * Такое разделение чинит не только гонки, но и детерминизм: раньше порядок трассировки регионов
  * задавался порядком обхода блоков, и диапазон 0..7 за один заход давал не тот мир, что 0..3 + 4..7.
  *
- * <p>Результат: outDir/map.bmp, map_veg.bmp, debug_rivers.bmp, chunks/*.bmp, world.state
+ * <p>Города собственной фазы не требуют: их геометрия — чистая функция от (seed, координаты),
+ * поэтому TownGenerator работает прямо в фазе 3 (см. mapgen.towns.TownField).
+ *
+ * <p>Результат: outDir/map.bmp, map_veg.bmp, debug_rivers.bmp, debug_towns.bmp, chunks/*.bmp,
+ * world.state
  */
 public final class Main {
 
@@ -126,8 +132,7 @@ public final class Main {
             GenerationPipeline pipeline = new GenerationPipeline()
                     .add(new BaseSurfaceGenerator())
                     .add(new RiverGenerator())
-                    // .add(new RoadGenerator())   // будущее: дороги — blockVegetation под полотном
-                    // .add(new TownGenerator())   // будущее: города
+                    .add(new TownGenerator())        // улицы + заглушка застройки
                     .add(new VegetationGenerator()); // всегда последний
 
             List<long[]> todo = new ArrayList<>();
@@ -170,6 +175,7 @@ public final class Main {
 
             store.stitch(state, out.resolve("map.bmp"), out.resolve("map_veg.bmp"));
             RiverDebugExporter.export(world, state, mask, out.resolve("debug_rivers.bmp"));
+            TownDebugExporter.export(world, state, mask, out.resolve("debug_towns.bmp"));
             System.out.println("Рек: " + state.rivers.size() + ", блоков: " + state.generatedChunks.size()
                     + " -> " + out.toAbsolutePath());
         } finally {

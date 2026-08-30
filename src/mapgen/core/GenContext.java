@@ -1,6 +1,7 @@
 package mapgen.core;
 
 import mapgen.rivers.WaterMask;
+import mapgen.towns.TownIndex;
 
 /**
  * Всё изменяемое, что нужно генераторам, — по одному экземпляру на поток.
@@ -10,11 +11,16 @@ import mapgen.rivers.WaterMask;
  * вызов — два fBm (6 и 2 октавы). На блоке 300x300 это ~700 тыс. вычислений шума там, где
  * достаточно 91 тыс. Кайма нужна потому, что соседей смотрят и за границей блока.
  *
- * <p>Память: два float[302*302] = 730 КБ на поток, плюс LRU водной маски.
+ * <p>Здесь же живёт кэш построенных городов ({@link TownIndex}): геометрия города детерминирована,
+ * но её постройка стоит сотен прямоугольников, а один город покрывает десятки блоков.
+ *
+ * <p>Память: два float[302*302] = 730 КБ на поток, плюс LRU водной маски и до
+ * {@link TownIndex#MAX_CACHED_TOWNS} городов.
  */
 public final class GenContext {
     private final World world;
     private final WaterMask.View water;
+    private final TownIndex towns;
     private final int size, stride;
     private final float[] height, moisture;
     private int ox, oy;                 // мировые координаты левого верхнего угла окна (с каймой)
@@ -26,6 +32,7 @@ public final class GenContext {
         if (!mask.isFrozen()) throw new IllegalStateException("маска должна быть заморожена до растеризации");
         this.world = world;
         this.water = mask.view();
+        this.towns = new TownIndex(world.townField());
         this.size = chunkSize;
         this.stride = chunkSize + 2 * MARGIN;
         this.height = new float[stride * stride];
@@ -33,6 +40,7 @@ public final class GenContext {
     }
 
     public World world() { return world; }
+    public TownIndex towns() { return towns; }
 
     /** Пересчитывает окно полей под новый блок. Вызывается конвейером перед первым генератором. */
     public void beginChunk(Chunk c) {

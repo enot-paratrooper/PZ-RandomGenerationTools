@@ -1,6 +1,7 @@
 package mapgen.core;
 
 import mapgen.colors.Palette;
+import mapgen.towns.TownField;
 
 import java.util.Random;
 
@@ -14,6 +15,9 @@ import java.util.Random;
  * Любое кэширование живёт в {@link GenContext}, по одному экземпляру на поток.
  * Речная вода здесь тоже не хранится: она приходит через {@link mapgen.rivers.WaterMask}
  * отдельным параметром, иначе World перестал бы быть чистым.
+ *
+ * <p>{@link TownField} этот инвариант не нарушает: он тоже чистый и читает только height().
+ * Кэш построенных городов лежит в {@link mapgen.towns.TownIndex} внутри GenContext.
  */
 public final class World {
     public static final int CHUNK_SIZE = 300;
@@ -25,6 +29,7 @@ public final class World {
     /** Доля крупномасштабного уклона в высоте: 0 — чистый Perlin, 1 — только "водоразделы/долины". */
     private static final float DRAINAGE_WEIGHT = 0.38f;
     private final double seaLevel, rockLevel;
+    private final TownField townField;
 
     public World(long seed, Palette palette, double seaLevel, double rockLevel) {
         this.seed = seed;
@@ -38,12 +43,15 @@ public final class World {
         this.patchField    = new NoiseField(seed + 42,    18, 3, 1.0);
         this.forestField   = new NoiseField(seed + 777,   90, 5, 1.0);
         this.bushField     = new NoiseField(seed + 999,   36, 3, 1.0);
+        // последним: TownField читает height()/seaLevel(), значит все поля выше уже проставлены
+        this.townField = new TownField(this);
     }
 
     public long seed()       { return seed; }
     public Palette palette() { return palette; }
     public double seaLevel() { return seaLevel; }
     public double rockLevel(){ return rockLevel; }
+    public TownField townField() { return townField; }
 
     /**
      * Высота = локальный рельеф + крупномасштабный уклон. Благодаря уклону у воды всегда есть
