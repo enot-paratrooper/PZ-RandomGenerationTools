@@ -180,4 +180,29 @@ public final class Town {
                 + ", кварталов " + blocks.length + ", участков " + lotCount()
                 + ", объектов " + facilities.length + ", попыток " + attempts;
     }
+    
+    /**
+     * AI: инвариант размещения — объекты не накладываются друг на друга и ни один не стоит
+     * на дороге. Проверка с нулевым зазором: генератор держит {@link TownField#OUTSIDE_CLEARANCE}
+     * и {@link TownField#ROAD_CLEARANCE}, так что запас должен быть.
+     *
+     * @return описание первого нарушения или null, если всё чисто
+     */
+    public String overlapProblem() {
+        for (int i = 0; i < facilities.length; i++) {
+            Facility a = facilities[i];
+            for (int j = i + 1; j < facilities.length; j++) {
+                Facility b = facilities[j];
+                if (a.x0() <= b.x1() && b.x0() <= a.x1() && a.y0() <= b.y1() && b.y0() <= a.y1())
+                    return "объекты «" + a.type().label + "» и «" + b.type().label
+                            + "» наложились у (" + a.x0() + "," + a.y0() + ")";
+            }
+            for (int s = 0; s < streetCount(); s++)
+                if (a.x0() <= streetX1(s) && streetX0(s) <= a.x1()
+                        && a.y0() <= streetY1(s) && streetY0(s) <= a.y1())
+                    return "объект «" + a.type().label + "» стоит на дороге у ("
+                            + a.x0() + "," + a.y0() + ")";
+        }
+        return null;
+    }
 }
