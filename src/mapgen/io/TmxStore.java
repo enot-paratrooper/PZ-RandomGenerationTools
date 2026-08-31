@@ -7,6 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * AI: Основной выход генератора — по одной ячейке WorldEd на блок карты.
@@ -25,6 +28,16 @@ public final class TmxStore {
     /** AI: подкаталог мира с ячейками. Совпадает с {@code <tmxexportdir path="tmx"/>} в .pzw. */
     public static final String DIR_NAME = "tmx";
 
+    /**
+     * AI: порядок зданий в ячейке. Застройщик и так обходит кварталы детерминированно, но
+     * сортировка делает вывод независимым и от будущих перестановок в конвейере: два прогона
+     * с одним seed обязаны дать побайтово одинаковые .tmx, иначе дифф бесполезен.
+     */
+    private static final Comparator<Chunk.Lot> LOT_ORDER =
+            Comparator.comparingInt(Chunk.Lot::y)
+                    .thenComparingInt(Chunk.Lot::x)
+                    .thenComparing(Chunk.Lot::path);
+
     private final Path dir;
     private final TmxTemplate template;
 
@@ -42,7 +55,10 @@ public final class TmxStore {
             throw new IllegalArgumentException("блок " + c.size + "x" + c.size
                     + " не совпадает с ячейкой шаблона " + template.width() + "x" + template.height());
 
-        String xml = template.render(TmxBitmap.of(c.base()), TmxBitmap.of(c.vegetation()));
+        List<Chunk.Lot> lots = new ArrayList<>(c.lots());
+        lots.sort(LOT_ORDER);
+
+        String xml = template.render(TmxBitmap.of(c.base()), TmxBitmap.of(c.vegetation()), lots);
         Path file = dir.resolve(template.fileName(c.cx, c.cy));
         Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
         Files.writeString(tmp, xml, StandardCharsets.UTF_8);

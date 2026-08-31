@@ -813,6 +813,10 @@ public final class TownField {
 		List<Town.Facility> out = new ArrayList<>();
 		for (int i = 0; i < tpl.infra.length; i++) {
 			InfraType type = tpl.infra[i];
+			// AI: тюрьма, торговый центр и кладбище отключены — постройки в пуле .tbx нет,
+			// закрывать отказ нечем. Раньше на них уходило 50 попыток в городе и 50 за чертой,
+			// а результат всё равно оседал в stderr и Town.missingInfra().
+			if (!type.available) continue;
 			for (int copy = 0; copy < tpl.infraCount[i]; copy++) {
 				Town.Facility f = placeInside(type, kept, streets, cityStreets, rnd);
 				if (f == null)
